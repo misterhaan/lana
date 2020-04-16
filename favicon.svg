@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg enable-background="new 0 0 256 256" height="256" viewBox="0 0 256 256" width="256" xmlns="http://www.w3.org/2000/svg">
+	<g>
+		<path d="M0,128 a128 128 0 0 1 128,-128 v128z" fill="#4ad"/>
+		<path d="M128,0 a128 128 0 0 1 128,128 h-128z" fill="#ed3"/>
+		<path d="M256,128 a128 128 0 0 1 -128,128 v-128z" fill="#c44"/>
+		<path d="M128,256 a128 128 0 0 1 -128,-128 h128z" fill="#5c3"/>
+	</g>
+	<path d="M24,66 h208 v96 h-40 v24 h-32 v24 h-64 v-24 h-32 v-24 h-40z" fill="#223"/>
+	<g fill="#c73">
+		<rect x="54" y="66" width="8" height="16"/>
+		<rect x="74" y="66" width="8" height="16"/>
+		<rect x="94" y="66" width="8" height="16"/>
+		<rect x="114" y="66" width="8" height="16"/>
+		<rect x="134" y="66" width="8" height="16"/>
+		<rect x="154" y="66" width="8" height="16"/>
+		<rect x="174" y="66" width="8" height="16"/>
+		<rect x="194" y="66" width="8" height="16"/>
+	</g>
+</svg>
