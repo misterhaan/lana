@@ -1,11 +1,16 @@
 {
-	"background_color": "#72a",
-	"theme_color": "#72a",
+	"background_color": "#537",
+	"theme_color": "#537",
 	"description": "Gaming together is easier if you LAN Ahead!",
-	"display": "standalone",
+	"display": "minimal-ui",
 	"name": "LAN Ahead",
 	"start_url": ".",
 	"icons": [
+		{
+			"src": "favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml"
+		},
 		{
 			"src": "favicon-196.png",
 			"sizes": "196x196",

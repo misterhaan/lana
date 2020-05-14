@@ -1,0 +1,9 @@
+#statusbar {
+	@include flex-container;
+	margin: 4px 8px;
+	font-size: .8em;
+}
+
+#copyright {
+	margin-left: auto;
+}

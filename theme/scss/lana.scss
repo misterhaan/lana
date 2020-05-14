@@ -1,0 +1,48 @@
+// lana.scss contains general styles for all of LAN Ahead.
+
+@import "!base";
+
+html {
+	background-color: $purplegrey;
+	color: $ltmedgrey;
+	@media(min-width: 600px) {
+		padding: 0 15px;
+	}
+}
+body {
+	padding: 0;
+	margin: 0 auto;
+	-moz-text-size-adjust: none;
+	-webkit-text-size-adjust: 100%;
+	font-family: 'Istok Web', sans-serif;
+	font-size: 1.25em;
+	max-width: 1000px;
+}
+main {
+	background-color: $dkgrey;
+	color: $ltgrey;
+	display: inline-block;  // to keep child margins inside
+	width: 100%;
+	@media(min-width: 600px) {
+		border-radius: $mediumcorner;
+	}
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-size: 1.25em;
+	font-family: 'Exo 2', sans-serif;
+	font-weight: normal;
+	margin: 20px 10px 5px;
+}
+h1 {
+	font-size: 1.5em;
+	margin: 5px 10px;
+	color: $orange;
+}
+
+p {
+	margin: 10px 20px;
+}
+
+@import "!titlebar";
+@import "!statusbar";
