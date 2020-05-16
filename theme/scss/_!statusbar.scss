@@ -4,6 +4,107 @@
 	font-size: .8em;
 }
 
+#errorToast {
+	bottom: 30px;
+	border: 3px solid $red;
+	border-left: none;
+	background: linear-gradient(90deg, $red 30px, $dkgrey 30px);  // makes the red behind the icon look like it goes all the way down
+	color: $white;
+	border-radius: $gentlecorner;
+	padding: 2px 4px;
+	@include flex-container-baseline;
+	&:before {
+		@include fontawesome;
+		color: $white;
+		padding-right: 3px;
+		content: "\f06a";
+		margin: -2px 6px -4px -2px;
+		padding: 2px 8px;
+	}
+	a {
+		color: $medgrey;
+		&:hover {
+			color: $red;
+		}
+	}
+}
+
+#errors {
+	bottom: 22px;
+	border: 3px solid $red;
+	border-top: none;
+	border-radius: $gentlecorner $gentlecorner $gentlecorner 0;
+	background-color: $dkgrey;
+	color: $white;
+	header {
+		@include flex-container-baseline;
+		padding: 0 4px;
+		background-color: $red;
+		color: $white;
+		a {
+			color: $white;
+		}
+	}
+	ol {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		max-height: calc(100vh - 80px);
+		overflow-y: auto;
+	}
+	li {
+		@include flex-container-baseline;
+		padding: 2px 4px;
+		&:not(:first-child) {
+			border-top: 1px solid $red;
+		}
+		a {
+			color: $medgrey;
+			&:hover {
+				color: $red;
+			}
+		}
+	}
+}
+
+#errorToast,
+#errors {
+	position: fixed;
+	margin-right: 8px;
+	a {
+		@include fa-replaced;
+		@include flex-item-fixed;
+		&:first-child {
+			margin-left: auto;
+		}
+		&.minimize:before {
+			content: "\f2d1";
+			padding: 0 4px;
+			font-size: .6em;
+		}
+		&.close:before {
+			content: "\f00d";
+			padding-left: 4px;
+		}
+	}
+}
+
+#errorcount {
+	position: fixed;
+	bottom: 4px;
+	color: $white;
+	text-decoration: none;
+	background-color: $red;
+	border-radius: $gentlecorner;
+	padding: 0 6px 0 4px;
+	height: 21px;
+	&:before {
+		@include fontawesome;
+		content: "\f06a";
+		margin-right: 6px;
+	}
+}
+
 #copyright {
 	margin-left: auto;
 }

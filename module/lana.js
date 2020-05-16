@@ -10,7 +10,8 @@ new Vue({
 	data: {
 		view: Views.Home,
 		subView: false,
-		params: false
+		params: false,
+		error: false
 	},
 	watch: {
 		view(val) {
@@ -92,8 +93,8 @@ new Vue({
 	template: /*html*/ `
 		<div id=lana>
 			<titlebar></titlebar>
-			<component :is=view.Name :view=subView :params=params></component>
-			<statusbar></statusbar>
+			<component :is=view.Name :view=subView :params=params @error="error = $event"></component>
+			<statusbar :last-error=error></statusbar>
 		</div>
 	`
 });
