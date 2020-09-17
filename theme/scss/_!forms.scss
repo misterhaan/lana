@@ -1,0 +1,152 @@
+// form styles for LAN Ahead
+
+input, button, select, textarea {
+	font-family: inherit;
+	font-size: 1em;
+}
+input:not([type]),  // default type is text
+input[type=text],
+input[type=password],
+input[type=number] {
+	padding: 3px 5px;
+	height: 20px;
+	border: none;
+	border-bottom: 1px solid $medgrey;
+	background: transparent;
+	color: inherit;
+	border-radius: 0;
+	&:focus {
+		border-bottom: 3px solid $orange;
+		padding-bottom: 1px;
+		outline: none;
+	}
+}
+select {
+	padding: 1px 5px 5px;  // needs to be 2px higher than the inputs
+	height: 27px;  // this actually works out to 20?  maybe it includes padding and border
+	border: none;
+	border-bottom: 1px solid $medgrey;
+	border-radius: 0;
+	background: transparent;
+	&:focus {
+		border-bottom: 3px solid $purple;
+		padding-bottom: 3px;
+		outline: none;
+	}
+}
+input[type=number] {
+	padding-right: 0;
+	text-align: right;
+}
+textarea {
+	@include flex-item-fill;
+	padding: 1px 5px 0 7px;
+	border: none;
+	border-left: 1px solid $medgrey;
+	border-radius: 0;
+	background: transparent;
+	&:focus {
+		border-left: 3px solid $purple;
+		padding-left: 5px;
+		outline: none;
+	}
+}
+button {
+	background: transparent;
+	border: none;
+	&:before {
+		@include fa-label;
+	}
+	&:hover,
+	&:focus {
+		color: $purple;
+		background-color: $medgrey;
+		border-radius: $gentlecorner;
+	}
+}
+
+label {
+	margin: 5px 20px;
+}
+h1, ul {
+	label {
+		margin: 0;
+	}
+}
+
+.multifield label {
+	@include flex-container-center;
+}
+
+.singlelinefields label,
+label.singlelinefields {
+	@include flex-container-baseline;
+	input,
+	select {
+		@include flex-item-fill;
+	}
+}
+.multifield,
+.singlelinefields {
+	label {
+		button {
+			@include icon-button;
+			color: $ltmedgrey;
+			&:last-child {
+				margin-right: 0;
+			}
+			&:hover,
+			&:focus {
+				color: $purple;
+			}
+		}
+	}
+}
+
+.suggestWithAdd li.add:before {
+	@include fa-label;
+}
+
+.calltoaction {
+	text-align: center;
+	a,
+	button {
+		display: inline-block;
+		white-space: nowrap;
+		text-decoration: none;
+		border-radius: $gentlecorner;
+		background-color: $ltmedgrey;
+		color: $black;
+		border: none;
+		padding: 5px 15px;
+		margin: 10px;
+		cursor: pointer;
+		&:before {
+			@include fa-label;
+		}
+		&:focus,
+		&:hover {
+			background-color: $purple;
+			color: $white;
+			outline: none;
+			&:not(:disabled):before {
+				color: $white;
+			}
+		}
+		&:disabled {
+			--sqrt2: 1.4142135623730950488016887242097;
+			background: repeating-linear-gradient(
+				45deg,
+				$dkmedgrey,
+				$dkmedgrey calc(3px / var(--sqrt2)),
+				transparent calc(3px / var(--sqrt2)),
+				transparent calc(6px / var(--sqrt2))
+			);
+			color: $medgrey;
+			cursor: not-allowed;
+			&:before {
+				color: $medgrey;
+			}
+		}
+	}
+}

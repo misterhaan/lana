@@ -3,6 +3,7 @@ DirectoryIndex lana.html
 
 RewriteEngine On
 RewriteRule \.git/ - [F]
+RewriteRule etc/ - [F]
 
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
 RewriteRule (android|apple|ms)\-icon\-([0-9]+)x([0-9]+)\.png$ %2favicon-$2.png

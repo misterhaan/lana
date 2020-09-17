@@ -44,5 +44,8 @@ p {
 	margin: 10px 20px;
 }
 
+@import "!icons";
+@import "!forms";
 @import "!titlebar";
 @import "!statusbar";
+@import "setup";

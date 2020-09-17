@@ -1,5 +1,6 @@
 $red: #c44;
 $orange: #c73;
+$blue: #4ad;
 $purple: #537;
 
 $purplegrey: #201820;
@@ -9,6 +10,7 @@ $white: #ffe;
 $ltgrey: #bba;
 $ltmedgrey: #998;
 $medgrey: #665;
+$dkmedgrey: #46443c;
 $dkgrey: #353339;
 $black: #111;
 
@@ -53,6 +55,32 @@ $largecorner: 9px;
 	display: inline-block;
 	font-weight: normal;
 }
+@mixin fa-label {
+	@include fontawesome;
+	font-size: .9em;
+	margin-right: 5px;
+}
+@mixin fa-replaced {
+	span {
+		display: none;
+	}
+	&:before {
+		@include fontawesome;
+		margin-right: 0;
+	}
+}
+@mixin icon-button {
+	@include fa-replaced;
+	padding: 0;
+	margin: 0 5px;
+	width: 25px;
+	height: 25px;
+	text-align: center;
+	cursor: pointer;
+	&::-moz-focus-inner {  // hide dotted line focus border in firefox
+		border: 0;
+	}
+}
 
 @mixin flex-container {
 	display: -webkit-flex;
@@ -72,4 +100,8 @@ $largecorner: 9px;
 @mixin flex-item-fixed($basis: auto) {
 	-webkit-flex: 0 0 $basis;
 	flex: 0 0 $basis;
+}
+@mixin flex-item-fill($factor: 1) {
+	-webkit-flex: $factor $factor auto;
+	flex: $factor $factor auto;
 }

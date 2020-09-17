@@ -1,0 +1,47 @@
+// Styles specific to the setup page
+
+@font-face {
+	font-family: InconsolataGo;
+	src: url(InconsolataGo-Regular.woff);
+}
+
+.percentfield {
+	margin: 3px 20px;
+	background-color: $dkmedgrey;
+	border-radius: $gentlecorner;
+	.percentvalue {
+		height: 10px;
+		background-color: $blue;
+		border-radius: $gentlecorner;
+	}
+}
+
+.stepsTaken {
+	list-style-type: square;
+	margin: 10px 20px;
+	padding-left: 16px;
+}
+
+#dbconn .label {
+	@include flex-item-fixed(105px);
+}
+
+summary {
+	margin-left: 10px;
+}
+blockquote {
+	margin: 0 0 0 20px;
+	border-left: 3px solid $ltgrey;
+}
+
+pre {
+	@extend p;
+	padding: 5px 10px;
+	border-radius: $gentlecorner;
+	background-color: $ltgrey;
+	color: $black;
+	overflow-x: auto;
+}
+code {
+	font-family: InconsolataGo, monospace;
+}
