@@ -53,15 +53,14 @@ textarea {
 }
 button {
 	background: transparent;
+	color: inherit;
 	border: none;
 	&:before {
 		@include fa-label;
 	}
-	&:hover,
 	&:focus {
-		color: $purple;
-		background-color: $medgrey;
-		border-radius: $gentlecorner;
+		outline: none;
+		box-shadow: 0 0 0 3px $orange;
 	}
 }
 
@@ -92,12 +91,14 @@ label.singlelinefields {
 		button {
 			@include icon-button;
 			color: $ltmedgrey;
+			border-radius: $gentlecorner;
 			&:last-child {
 				margin-right: 0;
 			}
 			&:hover,
 			&:focus {
-				color: $purple;
+				background-color: $purple;
+				color: $white;
 			}
 		}
 	}
@@ -115,8 +116,8 @@ label.singlelinefields {
 		white-space: nowrap;
 		text-decoration: none;
 		border-radius: $gentlecorner;
-		background-color: $ltmedgrey;
-		color: $black;
+		background-color: $purple;
+		color: $white;
 		border: none;
 		padding: 5px 15px;
 		margin: 10px;
@@ -126,12 +127,8 @@ label.singlelinefields {
 		}
 		&:focus,
 		&:hover {
-			background-color: $purple;
-			color: $white;
 			outline: none;
-			&:not(:disabled):before {
-				color: $white;
-			}
+			box-shadow: 0 0 0 3px $orange;
 		}
 		&:disabled {
 			--sqrt2: 1.4142135623730950488016887242097;

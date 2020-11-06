@@ -15,19 +15,20 @@ class SetupApi extends Api {
 			$result->stepData = "File not found";
 		else {
 			require_once(dirname(DOCROOT) . '/.lanaKeys.php');
-			if(!class_exists("KeysDB"))
+			if(!class_exists('KeysDB'))
 				$result->stepData = "Class not defined";
-			elseif(!defined("KeysDB::HOST") || !defined("KeysDB::NAME") || !defined("KeysDB::USER") || !defined("KeysDB::PASS"))
+			elseif(!defined('KeysDB::HOST') || !defined('KeysDB::NAME') || !defined('KeysDB::USER') || !defined('KeysDB::PASS'))
 				$result->stepData = "Class incomplete";
 			else {
 				$result->level = -3;
 				$db = @new mysqli(KeysDB::HOST, KeysDB::USER, KeysDB::PASS, KeysDB::NAME);
 				if(!$db || $db->connect_errno)
 					$result->stepData = [
-						"name" => KeysDB::NAME,
-						"user" => KeysDB::USER,
-						"pass" => KeysDB::PASS,
-						"error" => $db->connect_errno . ' ' . $db->connect_error
+						// TODO:  don't send these up
+						'name' => KeysDB::NAME,
+						'user' => KeysDB::USER,
+						'pass' => KeysDB::PASS,
+						'error' => $db->connect_errno . ' ' . $db->connect_error
 					];
 				else {
 					$result->level = -2;
@@ -39,7 +40,7 @@ class SetupApi extends Api {
 									$result->level = -1;
 									if($config->structureVersion < Version::Structure)
 										$result->stepData = [
-											"structureBehind" => Version::Structure - $config->structureVersion
+											'structureBehind' => Version::Structure - $config->structureVersion
 										];
 									else
 										$result->level = 0;
