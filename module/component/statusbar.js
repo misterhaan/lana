@@ -102,7 +102,7 @@ export default {
 				</ol>
 			</div>
 			<a id=errorcount :title="showErrors ? 'Minimize the error list' : 'Show the error list'" v-if=errors.length href=#showErrors @click.prevent.stop=ToggleErrors>{{errors.length}}</a>
-			<div id=copyright>© 2020 ${AppName.Full}</div>
+			<div id=copyright>© 2020 - 2021 ${AppName.Full}</div>
 		</footer>
 	`
 }
