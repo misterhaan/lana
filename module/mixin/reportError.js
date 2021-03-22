@@ -1,4 +1,4 @@
-export default {
+const ReportError = {
 	methods: {
 		Error(error) {
 			if(typeof error == "string")
@@ -7,3 +7,4 @@ export default {
 		}
 	}
 }
+export default ReportError;

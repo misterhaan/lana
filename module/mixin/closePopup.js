@@ -1,4 +1,4 @@
-export default {
+const ClosePopup = {
 	directives: {
 		"close-popup": {
 			bind(el, binding) {
@@ -32,4 +32,5 @@ export default {
 			}
 		}
 	}
-}
+};
+export default ClosePopup;
