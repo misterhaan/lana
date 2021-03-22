@@ -1,5 +1,7 @@
 <?php
-require_once dirname(__DIR__) . '/etc/class/api.php';
+if(!defined('CLASS_PATH'))
+	define('CLASS_PATH', dirname(__DIR__) . '/etc/class/');
+require_once CLASS_PATH . 'api.php';
 
 /**
  * Handler for setup API requests.
@@ -10,24 +12,24 @@ class SetupApi extends Api {
 	 * Get the current setup level.
 	 */
 	public static function currentLevel() {
+		require_once CLASS_PATH . 'url.php';
+		$docroot = Url::DocRoot();
 		$result = (object)['level' => -4];
-		if(!file_exists(dirname(DOCROOT) . '/.lanaKeys.php'))
+		if(!file_exists(dirname($docroot) . '/.lanaKeys.php'))
 			$result->stepData = "File not found";
 		else {
-			require_once(dirname(DOCROOT) . '/.lanaKeys.php');
-			if(!class_exists('KeysDB'))
+			require_once(dirname($docroot) . '/.lanaKeys.php');
+			if(!class_exists('KeysDB') || !class_exists('KeysTwitch'))
 				$result->stepData = "Class not defined";
-			elseif(!defined('KeysDB::HOST') || !defined('KeysDB::NAME') || !defined('KeysDB::USER') || !defined('KeysDB::PASS'))
+			elseif(!defined('KeysDB::Host') || !defined('KeysDB::Name') || !defined('KeysDB::User') || !defined('KeysDB::Pass')
+				|| !KeysDB::Host || !KeysDB::Name || !KeysDB::User || !KeysDB::Pass
+				|| !defined('KeysTwitch::ClientId') || !defined('KeysTwitch::ClientSecret') || !KeysTwitch::ClientId || !KeysTwitch::ClientSecret)
 				$result->stepData = "Class incomplete";
 			else {
 				$result->level = -3;
-				$db = @new mysqli(KeysDB::HOST, KeysDB::USER, KeysDB::PASS, KeysDB::NAME);
+				$db = @new mysqli(KeysDB::Host, KeysDB::User, KeysDB::Pass, KeysDB::Name);
 				if(!$db || $db->connect_errno)
 					$result->stepData = [
-						// TODO:  don't send these up
-						'name' => KeysDB::NAME,
-						'user' => KeysDB::USER,
-						'pass' => KeysDB::PASS,
 						'error' => $db->connect_errno . ' ' . $db->connect_error
 					];
 				else {
@@ -38,6 +40,7 @@ class SetupApi extends Api {
 							if($select->bind_result($config->structureVersion))
 								if($select->fetch()) {
 									$result->level = -1;
+									require_once CLASS_PATH . 'version.php';
 									if($config->structureVersion < Version::Structure)
 										$result->stepData = [
 											'structureBehind' => Version::Structure - $config->structureVersion
@@ -66,24 +69,31 @@ class SetupApi extends Api {
 	}
 
 	/**
-	 * Configure the database connection.
+	 * Configure the database and external API connections.
 	 */
-	protected static function POST_configureDatabase() {
-		if(isset($_POST['host'], $_POST['name'], $_POST['user'], $_POST['pass']) && ($host = trim($_POST['host']))
-			&& ($name = trim($_POST['name'])) && ($user = trim($_POST['user'])) && ($pass = $_POST['pass'])) {
-			$path = dirname(DOCROOT) . '/.lanaKeys.php';
+	protected static function POST_configureConnections() {
+		if(isset($_POST['host'], $_POST['name'], $_POST['user'], $_POST['pass'], $_POST['twitchId'], $_POST['twitchSecret'])
+			&& ($host = trim($_POST['host'])) && ($name = trim($_POST['name']))
+			&& ($user = trim($_POST['user'])) && ($pass = $_POST['pass'])
+			&& ($twitchId = trim($_POST['twitchId'])) && ($twitchSecret = trim($_POST['twitchSecret']))) {
+			require_once CLASS_PATH . 'url.php';
+			$path = dirname(Url::DocRoot()) . '/.lanaKeys.php';
 			$contents = '<?php
 class KeysDB {
-	const HOST = \'' . addslashes($_POST['host']) . '\';
-	const NAME = \'' . addslashes($_POST['name']) . '\';
-	const USER = \'' . addslashes($_POST['user']) . '\';
-	const PASS = \'' . addslashes($_POST['pass']) . '\';
+	const Host = \'' . addslashes($host) . '\';
+	const Name = \'' . addslashes($name) . '\';
+	const User = \'' . addslashes($user) . '\';
+	const Pass = \'' . addslashes($pass) . '\';
+}
+class KeysTwitch {
+	const ClientId = \'' . addslashes($twitchId) . '\';
+	const ClientSecret = \'' . addslashes($twitchSecret) . '\';
 }';
 			if($fh = fopen($path, 'w')) {
 				fwrite($fh, $contents);
 				self::Success(array_merge(self::currentLevel(), ['path' => $path, 'saved' => true]));
 			} else
-				self::Success(['path' => $path, 'saved' => false, 'message' => error_get_last()['message'], 'contents' => $contents]);
+				self::Success(['path' => $path, 'saved' => false, 'message' => error_get_last()['message'], 'template' => self::GetKeysTemplate()]);
 		} else
 			self::NeedMoreInfo('Parameters host, name, user, and pass are all required and cannot be blank.');
 	}
@@ -96,7 +106,8 @@ class KeysDB {
 		// tables, views, routines; then alphabetical order.  if anything has
 		// dependencies that come later, it comes after its last dependency.
 		$files = [
-			'table/config'
+			'table/config', 'table/profile', 'table/player', 'table/cookie',
+			'table/email', 'table/twitchAccount'
 		];
 		$db->autocommit(false);  // no partial database installations
 		foreach($files as $file)
@@ -118,6 +129,14 @@ class KeysDB {
 		if($db->config->structureVersion < Version::Structure)
 			self::UpgradeDatabaseStructure($db);
 		self::Success();
+	}
+
+	/**
+	 * Get the contents of the keys template file.
+	 * @return string Contents of the keys template file
+	 */
+	private static function GetKeysTemplate() {
+		return file_get_contents('../etc/lanaKeys.template.php');
 	}
 
 	/**

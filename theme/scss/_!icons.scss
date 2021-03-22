@@ -1,6 +1,96 @@
+@font-face {
+	font-family: Fontawesome;
+	src: url(fa-regular-400.woff2);
+}
+@font-face {
+	font-family: FontawesomeBrands;
+	src: url(fa-brands-400.woff2);
+}
+@font-face {
+	font-family: FontawesomeSolid;
+	src: url(fa-solid-900.woff2);
+}
+
+@-webkit-keyframes fa-spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(359deg);
+	}
+}
+@keyframes fa-spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(359deg);
+	}
+}
+
+.loading:before,
+.working:after {
+	font-family: FontawesomeSolid;
+	content: "\f110";
+	-webkit-animation: fa-spin 1s infinite steps(8);
+	animation: fa-spin 1s infinite steps(8);
+}
+
+.error:before {
+	font-family: FontawesomeSolid;
+	content: "\f06a";
+}
+
 .show:before {
+	font-family: Fontawesome;
 	content: "\f06e";
 }
 .hide:before {
+	font-family: Fontawesome;
 	content: "\f070";
+}
+
+.unchecked:before {
+	font-family: Fontawesome;
+	content: "\f0c8";
+}
+.checked:before {
+	font-family: Fontawesome;
+	content: "\f14a";
+}
+
+.valid:before {
+	font-family: FontawesomeSolid;
+	content: "\f00c";
+	color: $green;
+}
+.invalid:before {
+	font-family: FontawesomeSolid;
+	content: "\f05e";
+	color: $red;
+}
+
+.minimize:before {
+	font-family: Fontawesome;
+	content: "\f2d1";
+}
+.close:before {
+	font-family: FontawesomeSolid;
+	content: "\f00d";
+}
+
+.signout:before {
+	font-family: FontawesomeSolid;
+	content: "\f2f5";
+	-webkit-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+
+.twitch:before {
+	font-family: FontawesomeBrands;
+	content: "\f1e8";
+	.filledIcons & {
+		color: #9147ff;
+		background-color: #fff;
+	}
 }

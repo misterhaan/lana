@@ -7,7 +7,8 @@ input, button, select, textarea {
 input:not([type]),  // default type is text
 input[type=text],
 input[type=password],
-input[type=number] {
+input[type=number],
+input[type=email] {
 	padding: 3px 5px;
 	height: 20px;
 	border: none;
@@ -73,8 +74,10 @@ h1, ul {
 	}
 }
 
-.multifield label {
-	@include flex-container-center;
+fieldset {
+	border: none;
+	margin: 5px 20px;
+	padding: 0;
 }
 
 .singlelinefields label,
@@ -85,21 +88,21 @@ label.singlelinefields {
 		@include flex-item-fill;
 	}
 }
-.multifield,
-.singlelinefields {
-	label {
-		button {
-			@include icon-button;
-			color: $ltmedgrey;
-			border-radius: $gentlecorner;
-			&:last-child {
-				margin-right: 0;
-			}
-			&:hover,
-			&:focus {
-				background-color: $purple;
-				color: $white;
-			}
+.singlelinefields label {
+	.validation:before {
+		margin-left: 5px;
+	}
+	button {
+		@include icon-button;
+		color: $ltmedgrey;
+		border-radius: $gentlecorner;
+		&:last-child {
+			margin-right: 0;
+		}
+		&:hover,
+		&:focus {
+			background-color: $purple;
+			color: $white;
 		}
 	}
 }
@@ -110,6 +113,12 @@ label.singlelinefields {
 
 .calltoaction {
 	text-align: center;
+}
+.form {
+	margin: 5px 20px 15px;
+}
+.calltoaction,
+.form {
 	a,
 	button {
 		display: inline-block;
@@ -120,13 +129,13 @@ label.singlelinefields {
 		color: $white;
 		border: none;
 		padding: 5px 15px;
-		margin: 10px;
 		cursor: pointer;
 		&:before {
 			@include fa-label;
 		}
 		&:focus,
 		&:hover {
+			text-decoration: none;
 			outline: none;
 			box-shadow: 0 0 0 3px $orange;
 		}
@@ -145,5 +154,10 @@ label.singlelinefields {
 				color: $medgrey;
 			}
 		}
+	}
+}
+.calltoaction {
+	a, button {
+		margin: 10px;
 	}
 }

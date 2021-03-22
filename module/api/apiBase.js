@@ -56,6 +56,8 @@ export default class ApiBase {
 			request => {
 				if(request.status == 503 && request.statusText == "Setup Needed" && !location.href.includes("setup.html"))
 					location = "setup.html";
+				if(request.status == 401 && document.SignOut)
+					document.SignOut();
 				const error = new Error(
 					request.getResponseHeader("Content-Type").split(";")[0] == "text/plain"
 						? request.responseText

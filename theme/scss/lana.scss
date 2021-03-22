@@ -38,14 +38,61 @@ h1 {
 	font-size: 1.5em;
 	margin: 5px 10px;
 	color: $orange;
+	&:before {
+		@include fa-label;
+		margin-right: 9px;
+	}
+}
+
+:link,
+:visited {
+	color: $white;
+	outline: none;
+	text-decoration: inherit;
+	&:hover, &:focus {
+		text-decoration: underline;
+	}
 }
 
 p {
 	margin: 10px 20px;
 }
 
+.loading:before {
+	@include fa-label;
+}
+.working:after {
+	// this is essentially fa-label but with the margin on the other side since it's after
+	@include fontawesome;
+	font-size: .9em;
+	margin-left: 5px;
+}
+
+p.error {
+	display: flex;
+	&:before {
+		font-size: .85em;
+		color: $white;
+		background: $red;
+		flex: 0 0 auto;
+		padding: 3px;
+		border-right: 1px solid $red;
+		margin-right: 5px;
+	}
+	border: 1px solid $red;
+	border-radius: $gentlecorner;
+}
+
+.avatar {
+	border-radius: $gentlecorner;
+	// this default size isn't used anywhere yet
+	width: 32px;
+	height: 32px;
+}
+
 @import "!icons";
 @import "!forms";
 @import "!titlebar";
 @import "!statusbar";
+@import "signin";
 @import "setup";

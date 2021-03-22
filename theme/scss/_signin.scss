@@ -1,0 +1,43 @@
+// Registration form styles for LAN Ahead
+#newuser .label {
+	@include flex-item-fixed(112px);
+}
+#newuserbuttons {
+	margin-left: 132px;
+}
+#selectavatar {
+	padding-left: 112px;
+	legend {
+		margin-left: -112px;
+		padding: 0;
+		position: absolute;
+	}
+	label {
+		display: inline-flex;
+		flex-direction: column;
+		margin: 0;
+		padding: 0;
+		align-items: center;
+		border: 3px solid transparent;
+		&:focus-within {
+			border-color: $orange;
+			border-radius: 9px;
+		}
+	}
+	button {
+		margin: 0;
+		height: auto;
+		width: auto;
+		padding: 3px;  // must match border-width for the checked case
+		box-shadow: none;
+		border-radius: 6px;
+		&[aria-checked="true"] {
+			border: 3px solid $white;
+			padding: 0;
+		}
+		.avatar {
+			width: 96px;
+			height: 96px;
+		}
+	}
+}

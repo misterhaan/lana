@@ -4,13 +4,16 @@ import TitleBar from "./component/titlebar.js";
 import StatusBar from "./component/statusbar.js";
 import Views from "./views.js";
 import Home from "./component/home.js";
+import AuthApi from "./api/auth.js";
 
-new Vue({
+var lana = new Vue({
 	el: "#lana",
 	data: {
 		view: Views.Home,
 		subView: false,
 		params: false,
+		auths: false,
+		player: false,
 		error: false
 	},
 	watch: {
@@ -35,6 +38,12 @@ new Vue({
 	created() {
 		this.ParseHash();
 		$(window).on("hashchange", this.ParseHash);
+		AuthApi.List().done(result => {
+			this.auths = result;
+		}).fail(this.Error);
+		AuthApi.Player().done(result => {
+			this.player = result;
+		}).fail(this.Error);
 	},
 	methods: {
 		ParseHash() {
@@ -83,6 +92,11 @@ new Vue({
 				this.subView = subView;
 				this.view = view;
 			}
+		},
+		Error(error) {
+			this.error = typeof error == "string"
+				? new Error(error)
+				: error;
 		}
 	},
 	components: {
@@ -92,9 +106,17 @@ new Vue({
 	},
 	template: /*html*/ `
 		<div id=lana>
-			<titlebar></titlebar>
+			<titlebar :auths=auths :player=player></titlebar>
 			<component :is=view.Name :view=subView :params=params @error="error = $event"></component>
 			<statusbar :last-error=error></statusbar>
 		</div>
 	`
 });
+
+/**
+ * Define sign out function on the document object so that it can happen
+ * generically from the API level.
+ */
+document.SignOut = function() {
+	lana.player = false;
+};

@@ -1,17 +1,10 @@
 <?php
-require_once 'version.php';
-
-// CONTEXT_DOCUMENT_ROOT is set when an alias or similar is used, which makes
-// DOCUMENT_ROOT incorrect for this purpose.  assume the presence of an alias
-// means we're one level deep.
-define('DOCROOT', isset($_SERVER['CONTEXT_PREFIX']) && isset($_SERVER['CONTEXT_DOCUMENT_ROOT']) && $_SERVER['CONTEXT_PREFIX']
-	? dirname($_SERVER['CONTEXT_DOCUMENT_ROOT'])
-	: $_SERVER['DOCUMENT_ROOT']
-);
-
 // PHP should treat strings as UTF8
 ini_set('default_charset', 'UTF-8');
 mb_internal_encoding('UTF-8');
+
+// active user is tracked in session
+session_start();
 
 /**
  * Base class for API controllers.  Requests are formed as
@@ -31,7 +24,11 @@ abstract class Api {
 				$params = explode('/', substr($_SERVER['PATH_INFO'], 1));
 				$method .= '_' . array_shift($params);  // turn the HTTP method and the endpoint into a php method name
 				if(method_exists(static::class, $method))
-					static::$method($params);
+					try {
+						static::$method($params);
+					} catch(DatabaseException $de) {
+						self::DatabaseError($de->getMessage(), $de->dbObject);
+					}
 				else
 					self::NotFound('Requested endpoint does not exist on this controller or requires a different request method.');
 			} else
@@ -41,25 +38,52 @@ abstract class Api {
 	}
 
 	/**
+	 * Ensures the keys file exists and can be loaded.  Redirects to setup if not.
+	 **/
+	protected static function RequireKeys() {
+		require_once 'url.php';
+		if(!@include_once dirname(Url::DocRoot()) . '/.lanaKeys.php')
+			self::NeedSetup('Connection details not defined.');
+	}
+
+	/**
+	 * Ensures database connection information is available before continuing.
+	 * Redirects to setup if connection information is not defined.
+	 */
+	protected static function RequireDatabaseKeys() {
+		self::RequireKeys();
+		if(!class_exists('KeysDB') || !defined('KeysDB::Host') || !defined('KeysDB::Name') || !defined('KeysDB::User') || !defined('KeysDB::Pass'))
+			self::NeedSetup('Database connection details not specified or incomplete.');
+	}
+
+	/**
+	 * Ensures authentication site keys are available before continuing.
+	 * Redirects to setup if keys are not defined.
+	 */
+	protected static function RequireAuthSiteKeys() {
+		self::RequireKeys();
+		if(!class_exists('KeysTwitch') || !defined('KeysTwitch::ClientId'))
+			self::NeedSetup('Twitch keys not configured.');
+	}
+
+	/**
 	 * Gets the database connection object.  Redirects to setup if unable to
 	 * connect for any reason.  APIs other than setup should use
 	 * RequireLatestDatabase instead.
 	 * @return mysqli Database connection object.
 	 */
 	protected static function RequireDatabase() {
-		if(@include_once dirname(DOCROOT) . '/.lanaKeys.php') {
-			$db = @new mysqli(KeysDB::HOST, KeysDB::USER, KeysDB::PASS, KeysDB::NAME);
-			if(!$db->connect_errno) {
-				// it's probably okay to keep going if we can't set the character set
-				$db->real_query('set names \'utf8mb4\'');
-				$db->set_charset('utf8mb4');
-				return $db;
-			} else {
-				$db = false;
-				self::NeedSetup('Error connecting to database.', $db);
-			}
-		} else
-			self::NeedSetup('Database connection details not specified.');
+		self::RequireDatabaseKeys();
+		$db = @new mysqli(KeysDB::Host, KeysDB::User, KeysDB::Pass, KeysDB::Name);
+		if(!$db->connect_errno) {
+			// it's probably okay to keep going if we can't set the character set
+			$db->real_query('set names \'utf8mb4\'');
+			$db->set_charset('utf8mb4');
+			return $db;
+		} else {
+			$db = false;
+			self::NeedSetup('Error connecting to database.', $db);
+		}
 	}
 
 	/**
@@ -95,10 +119,27 @@ abstract class Api {
 	 */
 	protected static function RequireLatestDatabase() {
 		$db = self::RequireDatabaseWithConfig();
+		require_once 'version.php';
 		if($db->config->structureVersion >= Version::Structure)
 			return $db;
 		else
 			self::NeedSetup('Database upgrade required.');
+	}
+
+	/**
+	 * Look up the signed in player.
+	 * @param mysqli $db Database connection object
+	 * @param bool $canContinue True if the script should continue without a player
+	 * @return Player Signed-in player, or null
+	 */
+	protected static function RequirePlayer(mysqli $db, $canContinue = false) {
+		require_once CLASS_PATH . 'player.php';
+		$player = Player::FromSession($db);
+		if(!$player)
+			$player = Player::FromCookie($db);
+		if(!$canContinue && !$player)
+			self::NeedSignin();
+		return $player;
 	}
 
 	/**
@@ -160,5 +201,36 @@ abstract class Api {
 		if($dbObject)
 			$message .= ":  $dbObject->errno $dbObject->error";
 		die($message);
+	}
+
+	/**
+	 * Mark the request as requiring authentication.  Used when we need to know
+	 * who the player is but nobody is signed in.
+	 */
+	protected static function NeedSignin() {
+		http_response_code(401);
+		header('Content-Type: text/plain');
+		header('WWW-Authenticate: OAuth realm="LAN Ahead player-specific areas"');
+		die();
+	}
+}
+
+/**
+ * Exception thrown when an error is encountered working with the database.
+ */
+class DatabaseException extends Exception {
+	/**
+	 * The database object in use when this exception happened (mysqli or mysqli_result)
+	 */
+	public $dbObject;
+
+	/**
+	 * Create a new exception with a database object for more error details.
+	 * @param string $message The Exception message to throw
+	 * @param mysqli|mysqli_result $dbObject Database object that threw this error (optional)
+	 */
+	public function __construct(string $message, object $dbObject = null, int $code = 0, Throwable $previous = null) {
+		parent::__construct($message, $code, $previous);
+		$this->dbObject = $dbObject;
 	}
 }

@@ -22,8 +22,11 @@
 	padding-left: 16px;
 }
 
-#dbconn .label {
-	@include flex-item-fixed(105px);
+#dbconn,
+#twitchkeys {
+	.label {
+		@include flex-item-fixed(105px);
+	}
 }
 
 summary {

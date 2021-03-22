@@ -45,27 +45,20 @@ body {
 	margin-left: auto;
 	margin-right: 5px;
 	#usertrigger {
-		padding: 4px 5px 0;
+		padding: 4px 7px 0;
 		line-height: 26px;
-		display: block;
+		display: flex;
 		cursor: pointer;
 		&.open,
 		&:hover {
 			background-color: $ltpurple;
 		}
+		.avatar {
+			width: 24px;
+			height: 24px;
+			margin: -1px 7px 0 0;
+		}
 	}
 }
 
-#signin {
-	position: fixed;
-	background-color: $ltpurple;
-	border-radius: 0 0 $mediumcorner $mediumcorner;
-	box-shadow: 2px 2px 1px $black;
-	right: 10px;
-	@media(min-width: 600px) {
-		right: 25px;
-	}
-	@media(min-width: 1030px) {
-		right: calc(50% - 490px);
-	}
-}
+@import "!useractions";

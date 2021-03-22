@@ -84,7 +84,7 @@ export default {
 	mixins: [ClosePopup],
 	template: /*html*/ `
 		<footer id=statusbar>
-			<div id=errorToast v-toast=toastError>
+			<div id=errorToast class=error v-toast=toastError>
 				{{toastError.message}}
 				<a class=close title="Dismiss this error" href=#dismissError @click.prevent=DismissToast><span>Dismiss</span></a>
 			</div>
@@ -101,7 +101,7 @@ export default {
 					</li>
 				</ol>
 			</div>
-			<a id=errorcount :title="showErrors ? 'Minimize the error list' : 'Show the error list'" v-if=errors.length href=#showErrors @click.prevent.stop=ToggleErrors>{{errors.length}}</a>
+			<a id=errorcount class=error :title="showErrors ? 'Minimize the error list' : 'Show the error list'" v-if=errors.length href=#showErrors @click.prevent.stop=ToggleErrors>{{errors.length}}</a>
 			<div id=copyright>© 2020 - 2021 ${AppName.Full}</div>
 		</footer>
 	`
