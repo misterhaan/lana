@@ -32,7 +32,7 @@ class TwitchAuth extends Auth {
 	}
 
 	/**
-	 * Authenticate response from twitch.
+	 * Authenticate response from Twitch.
 	 * @return AuthenticationResult Result of authentication attempt
 	 * @throws AuthenticationException Thrown when unable to authenticate
 	 */
