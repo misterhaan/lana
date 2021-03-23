@@ -86,6 +86,14 @@
 	transform: rotate(180deg);
 }
 
+.steam:before {
+	font-family: FontawesomeBrands;
+	content: "\f3f6";
+	.filledIcons & {
+		color: #fff;
+		background-color: #070609;
+	}
+}
 .twitch:before {
 	font-family: FontawesomeBrands;
 	content: "\f1e8";

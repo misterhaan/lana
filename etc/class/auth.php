@@ -11,6 +11,9 @@ class AuthController {
 	 **/
 	public const Sites = [
 		[
+			'id' => 'steam',
+			'name' => 'Steam'
+		], [
 			'id' => 'twitch',
 			'name' => 'Twitch'
 		]
@@ -145,6 +148,25 @@ abstract class Auth {
 			return $nonce == $chkNonce && $this->id == $chkSource;
 		}
 		return false;
+	}
+
+	/**
+	 * Execute an HTTP GET request to a specified URL.
+	 * @param string $url Absolute URL to request
+	 * @return string HTTP response
+	 **/
+	protected function GetRequest(string $url) {
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['SERVER_NAME']);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_HEADER, false);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+		$response = curl_exec($ch);
+		curl_close($ch);
+		return $response;
 	}
 
 	/**
