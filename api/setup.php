@@ -106,8 +106,8 @@ class KeysTwitch {
 		// tables, views, routines; then alphabetical order.  if anything has
 		// dependencies that come later, it comes after its last dependency.
 		$files = [
-			'table/config', 'table/profile', 'table/player', 'table/cookie',
-			'table/email', 'table/steamAccount', 'table/twitchAccount'
+			'table/config', 'table/profile', 'table/player', 'table/account',
+			'table/cookie', 'table/email'
 		];
 		$db->autocommit(false);  // no partial database installations
 		foreach($files as $file)

@@ -24,8 +24,8 @@ class Account {
 	 */
 	public function __construct(string $site, string $id, mysqli $db) {
 		if(self::VerifySite($site))
-			if($get = $db->prepare("select player, profile from {$site}Account where id=? limit 1"))
-				if($get->bind_param('s', $id))
+			if($get = $db->prepare("select player, profile from account where site=? and id=? limit 1"))
+				if($get->bind_param('ss', $site, $id))
 					if($get->execute())
 						if($get->bind_result($this->player, $this->profile)) {
 							if($get->fetch()) {
@@ -57,8 +57,8 @@ class Account {
 	 */
 	public static function Save(mysqli $db, string $site, string $id, int $player, int $profile) {
 		if(self::VerifySite($site))
-			if($add = $db->prepare("insert into {$site}Account (id, player, profile) values (?, ?, ?)"))
-				if($add->bind_param('sii', $id, $player, $profile))
+			if($add = $db->prepare("insert into account (site, id, player, profile) values (?, ?, ?, ?)"))
+				if($add->bind_param('ssii', $site, $id, $player, $profile))
 					if($add->execute())
 						$add->close();
 					else
