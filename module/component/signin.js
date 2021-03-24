@@ -2,7 +2,7 @@ import ClosePopup from "../mixin/closePopup.js";
 import AppName from "../appName.js";
 import AuthApi from "../api/auth.js";
 
-export default {
+const Signin = {
 	props: [
 		"auths"
 	],
@@ -74,3 +74,4 @@ export default {
 		</div>
 	`
 }
+export default Signin;

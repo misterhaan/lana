@@ -3,7 +3,7 @@ import ClosePopup from "../mixin/closePopup.js";
 
 let toastTimeout = false;
 
-export default {
+const StatusBar = {
 	props: [
 		"lastError"
 	],
@@ -106,3 +106,4 @@ export default {
 		</footer>
 	`
 }
+export default StatusBar;

@@ -1,4 +1,4 @@
-export default {
+const Home = {
 	template: /*html*/ `
 		<main>
 			<h1>Welcome!</h1>
@@ -7,4 +7,5 @@ export default {
 			</p>
 		</main>
 	`
-}
+};
+export default Home;
