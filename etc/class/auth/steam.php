@@ -57,7 +57,7 @@ class SteamAuth extends Auth {
 					$id = explode('/', $_POST['openid_claimed_id']);
 					$id = $id[count($id) - 1];
 					$remember = isset($_POST['remember']);
-					$returnHash = isset($_POST['returnHash']) && $_POST['returnHash'].substr(0, 1) == '#' ? $_POST['returnHash'] : '';
+					$returnHash = isset($_POST['returnHash']) && substr($_POST['returnHash'], 0, 1) == '#' ? $_POST['returnHash'] : '';
 					$info = $this->GetPlayerInfo($id);
 					return new AuthenticationResult($remember, $returnHash, $id, '', $info->username, $info->realName, $info->avatar, $info->profile);
 				} else

@@ -43,7 +43,7 @@ class TwitchAuth extends Auth {
 			if(isset($_POST['state'])) {
 				parse_str($_POST['state'], $state);
 				$remember = isset($state['remember']);
-				if(isset($state['returnHash']) && $state['returnHash'].substr(0, 1) == '#')
+				if(isset($state['returnHash']) && substr($state['returnHash'], 0, 1) == '#')
 					$returnHash = $state['returnHash'];
 			}
 			$tokens = $this->GetTokens($code);
