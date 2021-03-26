@@ -5,7 +5,7 @@ body {
 		padding-top: 45px;
 	}
 }
-#titlebar {
+#titleBar {
 	background-color: $purple;
 	color: $white;
 	@include flex-container-center;
@@ -25,20 +25,22 @@ body {
 	}
 }
 
+#goHome {
+	@include flex-container-center;
+}
+
 #favicon {
 	width: 20px;
 	height: 20px;
 	display: inline-block;
-	cursor: pointer;
 }
-#sitetitle {
+#siteTitle {
 	font-size: inherit;
 	margin: 0 18px 0 7px;
 	font-family: 'Istok Web', sans-serif;
 	font-weight: normal;
 	padding-top: 4px;
 	line-height: 26px;
-	cursor: pointer;
 }
 
 #userstatus {
