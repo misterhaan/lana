@@ -53,4 +53,23 @@ class Profile {
 		else
 			throw new DatabaseException('Error preparing to update profile', $db);
 	}
+
+	/**
+	 * Delete a profile.  Usually done when deleting an account or email.
+	 * @param mysqli $db Database connection object
+	 * @param int $id Profile ID to delete
+	 * @throws DatabaseException Thrown when the database cannot complete a request
+	 */
+	public static function Delete(mysqli $db, int $id) {
+		if($del = $db->prepare('delete from profile where id=? limit 1'))
+			if($del->bind_param('i', $id))
+				if($del->execute())
+					$del->close();
+				else
+					throw new DatabaseException('Error executing profile delete query', $del);
+			else
+				throw new DatabaseException('Error binding profile delete parameter', $del);
+		else
+			throw new DatabaseException('Error preparing to delete profile', $db);
+	}
 }

@@ -20,7 +20,7 @@ abstract class Api {
 	public static function Respond() {
 		if(isset($_SERVER['PATH_INFO']) && substr($_SERVER['PATH_INFO'], 0, 1) == '/') {
 			$method = $_SERVER['REQUEST_METHOD'];
-			if(in_array($method, ['GET', 'POST', 'PUT', 'PATCH'])) {
+			if(in_array($method, ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])) {
 				$params = explode('/', substr($_SERVER['PATH_INFO'], 1));
 				$method .= '_' . array_shift($params);  // turn the HTTP method and the endpoint into a php method name
 				if(method_exists(static::class, $method))

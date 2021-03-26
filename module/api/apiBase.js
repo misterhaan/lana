@@ -38,6 +38,13 @@ export default class ApiBase {
 		return this.Ajax("PUT", url, data);
 	}
 
+	/** Perform an HTTP DELETE request to remove a record from the server.
+	 * @param {string} url - URL to request
+	 */
+	static DELETE(url) {
+		return this.Ajax("DELETE", url);
+	}
+
 	/**
 	 * Perform an HTTP request with some error handling.
 	 * @private

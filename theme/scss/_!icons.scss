@@ -78,7 +78,16 @@
 	font-family: FontawesomeSolid;
 	content: "\f00d";
 }
+.unlink:before {
+	font-family: FontawesomeSolid;
+	content: "\f127";
+	color: $red;
+}
 
+.settings:before {
+	font-family: FontawesomeSolid;
+	content: "\f013";
+}
 .signout:before {
 	font-family: FontawesomeSolid;
 	content: "\f2f5";

@@ -232,6 +232,16 @@ class Player {
 	}
 
 	/**
+	 * Get all accounts linked to the player.
+	 * @param mysqli $db Database connection object
+	 * @return AccountWithProfile[] Accounts linked to the player
+	 */
+	public function GetAccounts(mysqli $db) {
+		require_once 'account.php';
+		return Account::ListForPlayer($db, $this->id);
+	}
+
+	/**
 	 * Update the last login (and last request) instant for this player to now.
 	 * @param mysqli $db Database connection object
 	 * @throws DatabaseException Thrown when the database cannot complete a request

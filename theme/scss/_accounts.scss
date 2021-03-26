@@ -1,0 +1,61 @@
+// Styles specific to the accounts subpage of the settings page
+
+.cards {
+	padding: 0;
+	margin: 7px 15px;
+	li {
+		list-style-type: none;
+		display: inline-flex;
+		margin: 5px;
+		border-radius: $mediumcorner;
+	}
+}
+.linkedAccount {
+	background-color: $purple;
+	&:before {
+		text-align: center;
+		line-height: 48px;
+		width: 48px;
+		font-size: 1.5em;
+		border-radius: $mediumcorner 0 0 $mediumcorner;
+	}
+	a {
+		height: 48px;
+		.avatar {
+			border-radius: 0;
+		}
+		&:focus .avatar {
+			border-radius: $gentlecorner;
+			box-shadow: 0 0 0 3px $orange;
+		}
+	}
+	.actions {
+		border-radius: 0 $mediumcorner $mediumcorner 0;
+		padding-left: 3px;
+		button {
+			padding: 0 0 0 3px;  // there's less padding on the left than everywhere else
+			margin: 3px;
+			border-radius: $gentlecorner;
+			cursor: pointer;
+		}
+	}
+}
+
+#authNew {
+	margin: 10px 20px;
+	button {
+		padding: 0;
+		margin: 5px;
+		width: 48px;
+		height: 48px;
+		border-radius: 24px;
+		&:before {
+			cursor: pointer;
+			text-align: center;
+			line-height: 48px;
+			width: 48px;
+			font-size: 1.5em;
+			border-radius: 24px;
+		}
+	}
+}

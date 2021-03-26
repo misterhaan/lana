@@ -4,9 +4,10 @@ import TitleBar from "./component/titlebar.js";
 import StatusBar from "./component/statusbar.js";
 import Views from "./views.js";
 import Home from "./component/home.js";
+import Settings from "./component/settings.js";
 import AuthApi from "./api/auth.js";
 
-var lana = new Vue({
+const lana = new Vue({
 	el: "#lana",
 	data: {
 		view: Views.Home,
@@ -102,12 +103,13 @@ var lana = new Vue({
 	components: {
 		titlebar: TitleBar,
 		statusbar: StatusBar,
-		[Views.Home.Name]: Home
+		[Views.Home.Name]: Home,
+		[Views.Settings.Name]: Settings
 	},
 	template: /*html*/ `
 		<div id=lana>
 			<titlebar :auths=auths :player=player></titlebar>
-			<component :is=view.Name :view=subView :params=params @error="error = $event"></component>
+			<component :is=view.Name :view=subView :params=params :auths=auths :player=player @error="error = $event"></component>
 			<statusbar :last-error=error></statusbar>
 		</div>
 	`

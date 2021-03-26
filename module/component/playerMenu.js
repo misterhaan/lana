@@ -31,6 +31,7 @@ const PlayerMenu = {
 				{{player.username}}
 			</button>
 			<nav id=useractions v-if=showMenu v-close-popup=HideMenu>
+				<a href=#settings class=settings title="Change your settings" @click=HideMenu>Settings</a>
 				<button class=signout title="Sign out from ${AppName.Full}" @click=SignOut>Sign out</button>
 			</nav>
 		</div>

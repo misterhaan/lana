@@ -85,14 +85,14 @@ p.error {
 
 .avatar {
 	border-radius: $gentlecorner;
-	// this default size isn't used anywhere yet
-	width: 32px;
-	height: 32px;
+	width: 48px;
+	height: 48px;
 }
 
 @import "!icons";
 @import "!forms";
 @import "!titlebar";
 @import "!statusbar";
+@import "settings";
 @import "signin";
 @import "setup";

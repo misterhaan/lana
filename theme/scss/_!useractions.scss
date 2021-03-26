@@ -89,7 +89,7 @@
 }
 #useractions {
 	padding-top: 1px;
-	button {
+	a:link, button {
 		display: block;
 		padding: 0 7px;
 		margin: 2px 0;
@@ -104,5 +104,12 @@
 			margin-bottom: 0;
 			border-radius: 0 0 $mediumcorner $mediumcorner;
 		}
+	}
+	a:link:hover {
+		text-decoration: none;
+	}
+	a:link:focus {
+		text-decoration: none;
+		box-shadow: 0 0 0 3px $orange;
 	}
 }

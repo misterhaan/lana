@@ -3,7 +3,7 @@ create table player (
 	username varchar(20) not null,
 	realName varchar(64) not null default '' comment 'Real name is optional and only shown to certain friends',
 	avatarProfile int unsigned comment 'Profile that contains the avatar for this player',
-	foreign key(avatarProfile) references profile(id) on update cascade on delete cascade,
+	foreign key(avatarProfile) references profile(id) on update cascade on delete set null,
 
 	firstLogin datetime not null default now(),
 	lastLogin datetime not null default now(),
