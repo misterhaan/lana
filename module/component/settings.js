@@ -18,8 +18,9 @@ const Settings = {
 	template: /*html*/ `
 		<main>
 			<h1>Settings</h1>
-			<needsPlayer v-if=!player></needsPlayer>
-			<component v-if=player :is=view.Name :params=params :auths=auths @error=Error></component>
+			<needsPlayer :has-player=player>
+				<component :is=view.Name :params=params :auths=auths @error=Error></component>
+			</needsPlayer>
 		</main>
 	`
 };
