@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The authentication controller class is the entry point into the site-specific
  * authentication classes.
@@ -13,7 +14,8 @@ class AuthController {
 		[
 			'id' => 'steam',
 			'name' => 'Steam'
-		], [
+		],
+		[
 			'id' => 'twitch',
 			'name' => 'Twitch'
 		]
@@ -26,7 +28,7 @@ class AuthController {
 	 **/
 	public static function GetAuth(string $siteId) {
 		$site = self::FindSite($siteId);
-		if($site) {
+		if ($site) {
 			require_once "auth/$site->id.php";
 			$class = $site->name . 'Auth';
 			$auth = new $class();
@@ -44,8 +46,8 @@ class AuthController {
 	 **/
 	public static function FindSite(string $id) {
 		$id = strtolower($id);
-		foreach(self::Sites as $site)
-			if($site['id'] == $id)
+		foreach (self::Sites as $site)
+			if ($site['id'] == $id)
 				return (object)$site;
 		return false;
 	}
@@ -91,8 +93,8 @@ abstract class Auth {
 	 */
 	public function GetCachedAccount() {
 		$account = false;
-		if(isset($_SESSION['authSite'], $_SESSION['authAccount'])) {
-			if($_SESSION['authSite'] == $this->id) {
+		if (isset($_SESSION['authSite'], $_SESSION['authAccount'])) {
+			if ($_SESSION['authSite'] == $this->id) {
 				$account = new AuthenticationAccount(
 					$_SESSION['authAccount'],
 					$_SESSION['authName'],
@@ -141,7 +143,7 @@ abstract class Auth {
 	 * @return bool True if nonce and authentication site match the last generated nonce.
 	 **/
 	protected function ValidateNonce(string $nonce) {
-		if(isset($_SESSION['nonce'], $_SESSION['expectedAuthSource'])) {
+		if (isset($_SESSION['nonce'], $_SESSION['expectedAuthSource'])) {
 			$chkNonce = $_SESSION['nonce'];
 			$chkSource = $_SESSION['expectedAuthSource'];
 			unset($_SESSION['nonce'], $_SESSION['expectedAuthSource']);
@@ -155,7 +157,7 @@ abstract class Auth {
 	 * @param string $url Absolute URL to request
 	 * @return string HTTP response
 	 **/
-	protected function GetRequest(string $url) {
+	protected static function GetRequest(string $url) {
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['SERVER_NAME']);
@@ -175,7 +177,7 @@ abstract class Auth {
 	 * @param array $data Associative array of data to include with the request
 	 * @return string HTTP response
 	 **/
-	protected function PostRequest(string $url, array $data) {
+	protected static function PostRequest(string $url, array $data) {
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -230,7 +232,6 @@ class AuthenticationAccount {
 	 */
 	public function __construct(string $accountId, string $username = '', string $avatarUrl = '', string $profileUrl = '', bool $remember = false) {
 		$this->accountId = $accountId;
-		$this->email = $email;
 		$this->username = $username;
 		$this->avatarUrl = $avatarUrl;
 		$this->profileUrl = $profileUrl;
@@ -283,4 +284,5 @@ class AuthenticationResult extends AuthenticationAccount {
 /**
  * Thrown when something prevents authentication.
  */
-class AuthenticationException extends Exception {}
+class AuthenticationException extends Exception {
+}
