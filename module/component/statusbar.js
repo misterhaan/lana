@@ -60,10 +60,10 @@ const StatusBar = {
 	},
 	directives: {
 		toast: {
-			bind(el) {
+			created(el) {
 				$(el).hide();
 			},
-			update(el, bind, vnode) {
+			updated(el, bind, vnode) {
 				if(bind.value) {
 					if(toastTimeout) {
 						clearTimeout(toastTimeout);

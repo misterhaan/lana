@@ -1,7 +1,7 @@
 const ClosePopup = {
 	directives: {
 		"close-popup": {
-			bind(el, binding) {
+			created(el, binding) {
 				if(!document.popupStack) {
 					document.popupStack = [];
 					$(document).keyup(e => {
@@ -25,7 +25,7 @@ const ClosePopup = {
 				el.popupHide = binding.value;
 				document.popupStack.push(el);
 			},
-			unbind(el) {
+			unmounted(el) {
 				const index = document.popupStack.indexOf(el);
 				if(index > -1)
 					document.popupStack.splice(index, 1);

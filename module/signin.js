@@ -1,4 +1,4 @@
-import Vue from "../external/vue.esm.browser.min.js";
+import { createApp } from "../external/vue.esm-browser.prod.js";
 import TitleBar from "./component/titlebar.js";
 import StatusBar from "./component/statusbar.js";
 import AuthApi from "./api/auth.js";
@@ -9,8 +9,8 @@ const pathPrefix = "/signin-";
 const editTimeout = 250;
 const activeTimers = {};
 
-new Vue({
-	el: "#lana",
+createApp({
+	name: "LanaSignin",
 	data: {
 		siteId: false,
 		regInfo: false,
@@ -135,10 +135,6 @@ new Vue({
 				: error;
 		}
 	},
-	components: {
-		titlebar: TitleBar,
-		statusbar: StatusBar,
-	},
 	template: /*html*/ `
 		<div id=lana>
 			<titlebar></titlebar>
@@ -204,4 +200,6 @@ new Vue({
 			<statusbar :last-error=registerError></statusbar>
 		</div>
 	`
-});
+}).component("titlebar", TitleBar)
+	.component("statusbar", StatusBar)
+	.mount("#lana");

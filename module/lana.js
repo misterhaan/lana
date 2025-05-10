@@ -1,4 +1,4 @@
-import Vue from "../external/vue.esm.browser.min.js";
+import { createApp } from "../external/vue.esm-browser.prod.js";
 import AppName from "./appName.js";
 import TitleBar from "./component/titlebar.js";
 import StatusBar from "./component/statusbar.js";
@@ -7,15 +7,17 @@ import Home from "./component/home.js";
 import Settings from "./component/settings.js";
 import AuthApi from "./api/auth.js";
 
-const lana = new Vue({
-	el: "#lana",
-	data: {
-		view: Views.Home,
-		subView: false,
-		params: false,
-		auths: false,
-		player: false,
-		error: false
+const lana = createApp({
+	name: "LANA",
+	data() {
+		return {
+			view: Views.Home,
+			subView: false,
+			params: false,
+			auths: false,
+			player: false,
+			error: false
+		}
 	},
 	watch: {
 		view(val) {
@@ -100,12 +102,6 @@ const lana = new Vue({
 				: error;
 		}
 	},
-	components: {
-		titlebar: TitleBar,
-		statusbar: StatusBar,
-		[Views.Home.Name]: Home,
-		[Views.Settings.Name]: Settings
-	},
 	template: /*html*/ `
 		<div id=lana>
 			<titlebar :auths=auths :player=player></titlebar>
@@ -113,7 +109,11 @@ const lana = new Vue({
 			<statusbar :last-error=error></statusbar>
 		</div>
 	`
-});
+}).component("titlebar", TitleBar)
+	.component("statusbar", StatusBar)
+	.component(Views.Home.Name, Home)
+	.component(Views.Settings.Name, Settings)
+	.mount("#lana");
 
 /**
  * Define sign out function on the document object so that it can happen
