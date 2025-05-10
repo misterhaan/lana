@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Collection of URL-related functions.
  */
@@ -8,7 +9,7 @@ class Url {
 	 * @return string Full OS path to the webserver root path
 	 **/
 	public static function DocRoot() {
-		if(!self::$docRoot)
+		if (!self::$docRoot)
 			// CONTEXT_DOCUMENT_ROOT is set when an alias or similar is used, which makes
 			// DOCUMENT_ROOT incorrect for this purpose.  assume the presence of an alias
 			// means we're one level deep.
@@ -25,7 +26,7 @@ class Url {
 	 * @return string Absolute URL
 	 **/
 	public static function FullUrl($rootUrl) {
-		if($rootUrl[0] != '/')
+		if ($rootUrl[0] != '/')
 			$rootUrl = '/' . $rootUrl;
 		return self::Scheme() . '://' . self::Host() . self::InstallPath() . $rootUrl;
 	}
@@ -36,9 +37,9 @@ class Url {
 	 * @return string Application path on the webserver
 	 **/
 	public static function InstallPath() {
-		if(self::$path === false) {  // need to check against false exactly because it can be an empty string
+		if (self::$path === false) {  // need to check against false exactly because it can be an empty string
 			self::$path = dirname(dirname(substr(__DIR__, strlen(self::DocRoot()))));
-			if(self::$path == '/')
+			if (self::$path == '/')
 				self::$path = '';
 		}
 		return self::$path;
@@ -50,12 +51,12 @@ class Url {
 	 * @return string URL scheme for this website
 	 **/
 	private static function Scheme() {
-		if(!self::$scheme)
+		if (!self::$scheme)
 			self::$scheme = isset($_SERVER['REQUEST_SCHEME'])
 				? $_SERVER['REQUEST_SCHEME']
-				: isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on'
+				: (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on'
 					? 'https'
-					: 'http';
+					: 'http');
 		return self::$scheme;
 	}
 	private static $scheme = false;
@@ -65,11 +66,11 @@ class Url {
 	 * @return string Hostname for this website
 	 **/
 	private static function Host() {
-		if(!self::$host) {
+		if (!self::$host) {
 			self::$host = $_SERVER['SERVER_NAME'];
 			$port = $_SERVER['SERVER_PORT'];
 			// don't include standard ports.  assumes we won't have swapped the standard ports for http and https
-			if($port != 80 && $port != 443)
+			if ($port != 80 && $port != 443)
 				self::$host .= ':' . $port;
 		}
 		return self::$host;
