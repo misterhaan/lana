@@ -41,20 +41,24 @@ $largecorner: 9px;
 	display: inline-block;
 	font-weight: normal;
 }
+
 @mixin fa-label {
 	@include fontawesome;
 	font-size: .9em;
 	margin-right: 5px;
 }
+
 @mixin fa-replaced {
 	span {
 		display: none;
 	}
+
 	&:before {
 		@include fontawesome;
 		margin-right: 0;
 	}
 }
+
 @mixin icon-button {
 	@include fa-replaced;
 	padding: 0;
@@ -63,7 +67,9 @@ $largecorner: 9px;
 	height: 25px;
 	text-align: center;
 	cursor: pointer;
-	&::-moz-focus-inner {  // hide dotted line focus border in firefox
+
+	&::-moz-focus-inner {
+		// hide dotted line focus border in firefox
 		border: 0;
 	}
 }
@@ -73,25 +79,23 @@ $largecorner: 9px;
 }
 
 @mixin flex-container {
-	display: -webkit-flex;
 	display: flex;
 }
+
 @mixin flex-container-center {
 	@include flex-container;
-	-webkit-align-items: center;
 	align-items: center;
 }
+
 @mixin flex-container-baseline {
 	@include flex-container;
-	-webkit-align-items: baseline;
 	align-items: baseline;
 }
 
 @mixin flex-item-fixed($basis: auto) {
-	-webkit-flex: 0 0 $basis;
 	flex: 0 0 $basis;
 }
+
 @mixin flex-item-fill($factor: 1) {
-	-webkit-flex: $factor $factor auto;
 	flex: $factor $factor auto;
 }
