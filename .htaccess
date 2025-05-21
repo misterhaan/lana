@@ -3,6 +3,7 @@ DirectoryIndex lana.html
 
 RewriteEngine On
 RewriteRule \.git/ - [F]
+RewriteRule \.vscode/ - [F]
 RewriteRule etc/ - [F]
 
 AcceptPathInfo Default
