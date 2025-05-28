@@ -11,25 +11,27 @@ const activeTimers = {};
 
 createApp({
 	name: "LanaSignin",
-	data: {
-		siteId: false,
-		regInfo: false,
-		avatar: false,
-		working: false,
-		registering: false,
-		missingSiteId: false,
-		mainError: false,
-		registerError: false,
-		validation: {
-			username: {
-				status: "working",
-				message: "Checking username validity"
-			},
-			email: {
-				status: "working",
-				message: "Checking email address validity"
+	data() {
+		return {
+			siteId: false,
+			regInfo: false,
+			avatar: false,
+			working: false,
+			registering: false,
+			missingSiteId: false,
+			mainError: false,
+			registerError: false,
+			validation: {
+				username: {
+					status: "working",
+					message: "Checking username validity"
+				},
+				email: {
+					status: "working",
+					message: "Checking email address validity"
+				}
 			}
-		}
+		};
 	},
 	computed: {
 		username() { // only here for the watch
