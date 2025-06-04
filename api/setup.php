@@ -140,8 +140,8 @@ class KeysGoogle {
 	 */
 	protected static function POST_upgradeDatabase(): void {
 		$db = self::RequireDatabaseWithConfig();
-		if ($db->config->structureVersion < Version::Structure)
-			self::UpgradeDatabaseStructure($db);
+		if ($db->structureVersion < Version::Structure)
+			self::UpgradeDatabaseStructure($db->database);
 		self::Success();
 	}
 

@@ -89,20 +89,17 @@ abstract class Api {
 	 * Gets the database connection object along with the configuration record.
 	 * Redirects to setup if anything is missing.  APIs other than setup should
 	 * use RequireLatestDatabase instead.
-	 * @return mysqli Database connection object.
+	 * @return DatabaseWithConfiguration Database configuration and connection object.
 	 */
-	protected static function RequireDatabaseWithConfig(): mysqli {
-		// TODO:  use a wrapper object instead of hitchhiking the config
+	protected static function RequireDatabaseWithConfig(): DatabaseWithConfiguration {
 		$db = self::RequireDatabase();
 		try {
 			$select = $db->prepare('select structureVersion from config limit 1');
 			$select->execute();
-			$config = new stdClass();
-			$select->bind_result($config->structureVersion);
+			$select->bind_result($structureVersion);
 			if (!$select->fetch())
 				self::NeedSetup('Configuration not specified in database.');
-			$db->config = $config;
-			return $db;
+			return new DatabaseWithConfiguration($db, $structureVersion);
 		} catch (mysqli_sql_exception $mse) {
 			self::NeedSetup('Error loading configuration from database', $mse);
 			die;
@@ -118,9 +115,9 @@ abstract class Api {
 	protected static function RequireLatestDatabase(): mysqli {
 		$db = self::RequireDatabaseWithConfig();
 		require_once 'version.php';
-		if ($db->config->structureVersion < Version::Structure)
+		if ($db->structureVersion < Version::Structure)
 			self::NeedSetup('Database upgrade required.');
-		return $db;
+		return $db->database;
 	}
 
 	/**
@@ -214,6 +211,16 @@ abstract class Api {
 		header('Content-Type: text/plain');
 		header('WWW-Authenticate: OAuth realm="LAN Ahead player-specific areas"');
 		die();
+	}
+}
+
+class DatabaseWithConfiguration {
+	public mysqli $database;
+	public int $structureVersion;
+
+	public function __construct(mysqli $database, int $structureVersion) {
+		$this->database = $database;
+		$this->structureVersion = $structureVersion;
 	}
 }
 
