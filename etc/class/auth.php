@@ -7,7 +7,7 @@
  **/
 class AuthController {
 	/**
-	 * Supported authentication sites.  Each must have a {Name}Auth class defined
+	 * Supported authentication sites.  Each must have a {name}Auth class defined
 	 * at auth/{id}.php
 	 **/
 	public const Sites = [
@@ -26,7 +26,7 @@ class AuthController {
 	 * @param string $siteId ID of authentication site.  Must be present in self::Sites.
 	 * @return Auth|bool Authentication object or FALSE if $siteId is not valid.
 	 **/
-	public static function GetAuth(string $siteId) {
+	public static function GetAuth(string $siteId): ?Auth {
 		$site = self::FindSite($siteId);
 		if ($site) {
 			require_once "auth/$site->id.php";
@@ -36,20 +36,20 @@ class AuthController {
 			$auth->name = $site->name;
 			return $auth;
 		}
-		return false;
+		return null;
 	}
 
 	/**
 	 * Lookup authentication site information based on a site ID.
 	 * @param string $id ID of authentication site.
-	 * @return object|bool Object of authentication site information or FALSE if $id is not valid.
+	 * @return ?object Object of authentication site information or FALSE if $id is not valid.
 	 **/
-	public static function FindSite(string $id) {
+	public static function FindSite(string $id): ?object {
 		$id = strtolower($id);
 		foreach (self::Sites as $site)
 			if ($site['id'] == $id)
 				return (object)$site;
-		return false;
+		return null;
 	}
 }
 
@@ -66,20 +66,20 @@ abstract class Auth {
 	 * @param string $returnHash Location hash (starting with #) to return to after sign in
 	 * @return string Authentication URL on external site
 	 **/
-	public abstract function GetUrl(bool $remember, string $returnHash);
+	public abstract function GetUrl(bool $remember, string $returnHash): string;
 
 	/**
 	 * Authenticate response from external authentication site.
 	 * @return AuthenticationResult Result of authentication attempt
 	 * @throws AuthenticationException Thrown when something prevents authentication
 	 */
-	public abstract function Authenticate();
+	public abstract function Authenticate(): AuthenticationResult;
 
 	/**
 	 * Cache an authorized account to be used at registration.
 	 * @param AuthenticationAccount $account Authorized account information
 	 */
-	public function CacheResult(AuthenticationAccount $account) {
+	public function CacheResult(AuthenticationAccount $account): void {
 		$_SESSION['authSite'] = $this->id;
 		$_SESSION['authAccount'] = $account->accountId;
 		$_SESSION['authName'] = $account->username;
@@ -91,8 +91,8 @@ abstract class Auth {
 	/**
 	 * Retrieve an authorized account from the cache.
 	 */
-	public function GetCachedAccount() {
-		$account = false;
+	public function GetCachedAccount(): ?AuthenticationAccount {
+		$account = null;
 		if (isset($_SESSION['authSite'], $_SESSION['authAccount'])) {
 			if ($_SESSION['authSite'] == $this->id) {
 				$account = new AuthenticationAccount(
@@ -117,7 +117,7 @@ abstract class Auth {
 	 * Get the URL that external login should redirect to.
 	 * @return string Redirect URL for after external login.
 	 */
-	protected function GetRedirectUrl() {
+	protected function GetRedirectUrl(): string {
 		require_once 'url.php';
 		return Url::FullUrl(self::AfterLoginUrl . $this->id);
 	}
@@ -128,7 +128,7 @@ abstract class Auth {
 	 * generated for a different authentication site.
 	 * @return string One-time use (nonce) authentication identifier
 	 **/
-	protected function GenerateNonce() {
+	protected function GenerateNonce(): string {
 		$nonce = bin2hex(openssl_random_pseudo_bytes(16));
 		$_SESSION['nonce'] = $nonce;
 		$_SESSION['expectedAuthSource'] = $this->id;
@@ -142,7 +142,7 @@ abstract class Auth {
 	 * @param string $nonce Nonce value that came back with an authenication response
 	 * @return bool True if nonce and authentication site match the last generated nonce.
 	 **/
-	protected function ValidateNonce(string $nonce) {
+	protected function ValidateNonce(string $nonce): bool {
 		if (isset($_SESSION['nonce'], $_SESSION['expectedAuthSource'])) {
 			$chkNonce = $_SESSION['nonce'];
 			$chkSource = $_SESSION['expectedAuthSource'];
@@ -157,7 +157,7 @@ abstract class Auth {
 	 * @param string $url Absolute URL to request
 	 * @return string HTTP response
 	 **/
-	protected static function GetRequest(string $url) {
+	protected static function GetRequest(string $url): string {
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['SERVER_NAME']);
@@ -177,7 +177,7 @@ abstract class Auth {
 	 * @param array $data Associative array of data to include with the request
 	 * @return string HTTP response
 	 **/
-	protected static function PostRequest(string $url, array $data) {
+	protected static function PostRequest(string $url, array $data): string {
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -200,27 +200,27 @@ class AuthenticationAccount {
 	/**
 	 * ID for the account at the external site
 	 */
-	public $accountId;
+	public string $accountId;
 
 	/**
 	 * Username associated with the account
 	 */
-	public $username;
+	public ?string $username;
 
 	/**
 	 * URL to the avatar of the account
 	 */
-	public $avatarUrl;
+	public ?string $avatarUrl;
 
 	/**
 	 * URL to the profile of the account
 	 */
-	public $profileUrl;
+	public ?string $profileUrl;
 
 	/**
 	 * Whether to set a cookie to remember this sign in
 	 */
-	public $remember;
+	public bool $remember;
 
 	/**
 	 * Create an AuthenticationResult and set its properties.
@@ -246,17 +246,17 @@ class AuthenticationResult extends AuthenticationAccount {
 	/**
 	 * Address hash of LANA to return to after sign in
 	 */
-	public $returnHash;
+	public string $returnHash;
 
 	/**
 	 * Real name associated with the account
 	 */
-	public $realName;
+	public string $realName;
 
 	/**
 	 * Email address associated with the account
 	 */
-	public $email;
+	public string $email;
 
 	/**
 	 * Create an AuthenticationResult and set its properties.

@@ -1,5 +1,5 @@
 <?php
-if(!defined('CLASS_PATH'))
+if (!defined('CLASS_PATH'))
 	define('CLASS_PATH', dirname(__DIR__) . '/etc/class/');
 require_once CLASS_PATH . 'api.php';
 
@@ -11,50 +11,49 @@ class SetupApi extends Api {
 	/**
 	 * Get the current setup level.
 	 */
-	public static function currentLevel() {
+	public static function currentLevel(): object {
 		require_once CLASS_PATH . 'url.php';
 		$docroot = Url::DocRoot();
 		$result = (object)['level' => -4];
-		if(!file_exists(dirname($docroot) . '/.lanaKeys.php'))
+		if (!file_exists(dirname($docroot) . '/.lanaKeys.php'))
 			$result->stepData = "File not found";
 		else {
 			require_once(dirname($docroot) . '/.lanaKeys.php');
-			if(!class_exists('KeysDB') || !class_exists('KeysTwitch'))
+			if (!class_exists('KeysDB') || !class_exists('KeysTwitch'))  // TODO:  check for other sites
 				$result->stepData = "Class not defined";
-			elseif(!defined('KeysDB::Host') || !defined('KeysDB::Name') || !defined('KeysDB::User') || !defined('KeysDB::Pass')
+			elseif (
+				!defined('KeysDB::Host') || !defined('KeysDB::Name') || !defined('KeysDB::User') || !defined('KeysDB::Pass')
 				|| !KeysDB::Host || !KeysDB::Name || !KeysDB::User || !KeysDB::Pass
-				|| !defined('KeysTwitch::ClientId') || !defined('KeysTwitch::ClientSecret') || !KeysTwitch::ClientId || !KeysTwitch::ClientSecret)
+				|| !defined('KeysTwitch::ClientId') || !defined('KeysTwitch::ClientSecret') || !KeysTwitch::ClientId || !KeysTwitch::ClientSecret
+			)  // TODO:  check for other sites
 				$result->stepData = "Class incomplete";
 			else {
 				$result->level = -3;
 				$db = @new mysqli(KeysDB::Host, KeysDB::User, KeysDB::Pass, KeysDB::Name);
-				if(!$db || $db->connect_errno)
+				if (!$db || $db->connect_errno)
 					$result->stepData = [
 						'error' => $db->connect_errno . ' ' . $db->connect_error
 					];
 				else {
 					$result->level = -2;
-					if($select = $db->prepare('select structureVersion from config limit 1'))
-						if($select->execute()) {
-							$config = new stdClass();
-							if($select->bind_result($config->structureVersion))
-								if($select->fetch()) {
-									$result->level = -1;
-									require_once CLASS_PATH . 'version.php';
-									if($config->structureVersion < Version::Structure)
-										$result->stepData = [
-											'structureBehind' => Version::Structure - $config->structureVersion
-										];
-									else
-										$result->level = 0;
-								} else
-									$result->stepData = 'Configuration data missing';
+					try {
+						$select = $db->prepare('select structureVersion from config limit 1');
+						$select->execute();
+						$select->bind_result($structureVersion);
+						if ($select->fetch()) {
+							$result->level = -1;
+							require_once CLASS_PATH . 'version.php';
+							if ($structureVersion < Version::Structure)
+								$result->stepData = [
+									'structureBehind' => Version::Structure - $structureVersion
+								];
 							else
-								$result->stepData = $select->errno . ' ' . $select->error;
+								$result->level = 0;
 						} else
-							$result->stepData = $select->errno . ' ' . $select->error;
-					else
-						$result->stepData = $db->errno . ' ' . $db->error;
+							$result->stepData = 'Configuration data missing';
+					} catch (mysqli_sql_exception $mse) {
+						$result->stepData = $mse->getCode() . ' ' . $mse->getMessage();
+					}
 				}
 			}
 		}
@@ -64,21 +63,24 @@ class SetupApi extends Api {
 	/**
 	 * Get the current setup level.
 	 */
-	protected static function GET_level() {
+	protected static function GET_level(): void {
 		self::Success(self::currentLevel());
 	}
 
 	/**
 	 * Configure the database and external API connections.
 	 */
-	protected static function POST_configureConnections() {
-		if(isset($_POST['host'], $_POST['name'], $_POST['user'], $_POST['pass'], $_POST['twitchId'], $_POST['twitchSecret'])
-			&& ($host = trim($_POST['host'])) && ($name = trim($_POST['name']))
-			&& ($user = trim($_POST['user'])) && ($pass = $_POST['pass'])
-			&& ($twitchId = trim($_POST['twitchId'])) && ($twitchSecret = trim($_POST['twitchSecret']))) {
-			require_once CLASS_PATH . 'url.php';
-			$path = dirname(Url::DocRoot()) . '/.lanaKeys.php';
-			$contents = '<?php
+	protected static function POST_configureConnections(): void {
+		if (
+			!isset($_POST['host'], $_POST['name'], $_POST['user'], $_POST['pass'], $_POST['twitchId'], $_POST['twitchSecret'])
+			|| !($host = trim($_POST['host'])) || !($name = trim($_POST['name']))
+			|| !($user = trim($_POST['user'])) || !($pass = $_POST['pass'])
+			|| !($twitchId = trim($_POST['twitchId'])) || !($twitchSecret = trim($_POST['twitchSecret']))
+		)
+			self::NeedMoreInfo('Parameters host, name, user, and pass are all required and cannot be blank.');
+		require_once CLASS_PATH . 'url.php';
+		$path = dirname(Url::DocRoot()) . '/.lanaKeys.php';
+		$contents = '<?php
 class KeysDB {
 	const Host = \'' . addslashes($host) . '\';
 	const Name = \'' . addslashes($name) . '\';
@@ -89,44 +91,50 @@ class KeysTwitch {
 	const ClientId = \'' . addslashes($twitchId) . '\';
 	const ClientSecret = \'' . addslashes($twitchSecret) . '\';
 }';
-			if($fh = fopen($path, 'w')) {
-				fwrite($fh, $contents);
-				self::Success(array_merge(self::currentLevel(), ['path' => $path, 'saved' => true]));
-			} else
-				self::Success(['path' => $path, 'saved' => false, 'message' => error_get_last()['message'], 'template' => self::GetKeysTemplate()]);
+		if ($fh = fopen($path, 'w')) {
+			fwrite($fh, $contents);
+			self::Success(array_merge(self::currentLevel(), ['path' => $path, 'saved' => true]));
 		} else
-			self::NeedMoreInfo('Parameters host, name, user, and pass are all required and cannot be blank.');
+			self::Success(['path' => $path, 'saved' => false, 'message' => error_get_last()['message'], 'template' => self::GetKeysTemplate()]);
 	}
 
 	/**
 	 * Install the database at the latest version.
 	 */
-	protected static function POST_installDatabase() {
+	protected static function POST_installDatabase(): void {
 		$db = self::RequireDatabase();
 		// tables, views, routines; then alphabetical order.  if anything has
 		// dependencies that come later, it comes after its last dependency.
 		$files = [
-			'table/config', 'table/profile', 'table/player', 'table/account',
-			'table/cookie', 'table/email'
+			'table/config',
+			'table/profile',
+			'table/player',
+			'table/account',
+			'table/cookie',
+			'table/email'
 		];
-		$db->autocommit(false);  // no partial database installations
-		foreach($files as $file)
+		$db->begin_transaction();  // no partial database installations
+		foreach ($files as $file)
 			self::RunQueryFile($file, $db);
 
-		if($db->real_query('insert into config (structureVersion) values (' . +Version::Structure . ')')) {
-			$db->commit();
-			self::Success();
-		} else
-			self::DatabaseError('Error initializing configuration', $db);
+		try {
+			$version = Version::Structure;
+			$insert = $db->prepare('insert into config (structureVersion) values (?)');
+			$insert->bind_param('i', $version);
+			$insert->execute();
+		} catch (mysqli_sql_exception $mse) {
+			self::DatabaseError('Error initializing configuration', $mse);
+		}
+		$db->commit();
+		self::Success();
 	}
 
 	/**
 	 * Run all applicable upgrade scripts to bring the database up to the current version.
 	 */
-	protected static function POST_upgradeDatabase() {
+	protected static function POST_upgradeDatabase(): void {
 		$db = self::RequireDatabaseWithConfig();
-		$db->autocommit(false);  // each step should commit only if the entire step succeeds
-		if($db->config->structureVersion < Version::Structure)
+		if ($db->config->structureVersion < Version::Structure)
 			self::UpgradeDatabaseStructure($db);
 		self::Success();
 	}
@@ -135,7 +143,7 @@ class KeysTwitch {
 	 * Get the contents of the keys template file.
 	 * @return string Contents of the keys template file
 	 */
-	private static function GetKeysTemplate() {
+	private static function GetKeysTemplate(): string {
 		return file_get_contents('../etc/lanaKeys.template.php');
 	}
 
@@ -143,7 +151,7 @@ class KeysTwitch {
 	 * Upgrade database structure and update the structure version.
 	 * @param mysqli $db Database connection object.
 	 */
-	private static function UpgradeDatabaseStructure(mysqli $db) {
+	private static function UpgradeDatabaseStructure(mysqli $db): void {
 		// add future structure upgrades here (older ones need to go first)
 	}
 
@@ -153,9 +161,10 @@ class KeysTwitch {
 	 * @param mysqli $db Database connection object
 	 * @param string[] $queryfiles File subdirectory and name without extension for each query file to run
 	 */
-	private static function UpgradeDatabaseStructureStep(int $version, mysqli $db, string ...$queryfiles) {
-		if($db->config->structureVersion < $version) {
-			foreach($queryfiles as $file)
+	private static function UpgradeDatabaseStructureStep(int $version, mysqli $db, string ...$queryfiles): void {
+		if ($db->config->structureVersion < $version) {
+			$db->begin_transaction();  // each step should commit only if the entire step succeeds
+			foreach ($queryfiles as $file)
 				self::RunQueryFile($file, $db);
 
 			self::SetStructureVersion($version, $db);
@@ -168,15 +177,15 @@ class KeysTwitch {
 	 * @param string $filepath File subdirectory and name without extension
 	 * @param mysqli $db Database connection object
 	 */
-	private static function RunQueryFile(string $filepath, mysqli $db) {
+	private static function RunQueryFile(string $filepath, mysqli $db): void {
 		$sql = trim(file_get_contents(dirname(__DIR__) . '/etc/db/' . $filepath . '.sql'));
-		if(substr($filepath, 0, 12) == 'transition/') {  // transitions usually have more than one query
-			if($db->multi_query($sql)) {
-				while($db->next_result());  // these queries don't return results but we need to get past them to continue
+		if (substr($filepath, 0, 12) == 'transition/') {  // transitions usually have more than one query
+			if ($db->multi_query($sql)) {
+				while ($db->next_result());  // these queries don't return results but we need to get past them to continue
 				return;
 			}
 		} else {
-			if($db->real_query($sql))
+			if ($db->real_query($sql))
 				return;
 		}
 		// if we haven't returned already, the query failed
@@ -190,11 +199,15 @@ class KeysTwitch {
 	 * @param int $ver Structure version to set (use a constant from StructureVersion)
 	 * @param mysqli $db Database connection object
 	 */
-	private static function SetStructureVersion(int $ver, mysqli $db) {
-		if($db->real_query('update config set structureVersion=' . +$ver . ' limit 1'))
+	private static function SetStructureVersion(int $ver, mysqli $db): void {
+		try {
+			$update = $db->prepare('update config set structureVersion=? limit 1');
+			$update->bind_param('i', $ver);
+			$update->execute();
 			$db->config->structureVersion = +$ver;
-		else
-			self::DatabaseError("Error setting structure version to $ver", $db);
+		} catch (mysqli_sql_exception $mse) {
+			self::DatabaseError("Error setting structure version to $ver", $mse);
+		}
 	}
 }
 SetupApi::Respond();

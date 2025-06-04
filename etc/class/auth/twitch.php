@@ -1,5 +1,5 @@
 <?php
-if(!defined('CLASS_PATH'))
+if (!defined('CLASS_PATH'))
 	define('CLASS_PATH', dirname(__DIR__) . '/');
 
 require_once CLASS_PATH . 'auth.php';
@@ -15,9 +15,9 @@ class TwitchAuth extends Auth {
 	 * @param string $returnHash Location hash (starting with #) to return to after sign in
 	 * @return string URL for signing in via Twitch
 	 */
-	public function GetUrl(bool $remember, string $returnHash) {
+	public function GetUrl(bool $remember, string $returnHash): string {
 		$state = $remember ? 'remember' : '';
-		if($returnHash)
+		if ($returnHash)
 			$state .= ($state ? '&' : '') . 'returnHash=' . urlencode($returnHash);
 		$data = [
 			'claims' => json_encode(['id_token' => ['email' => null, 'picture' => null, 'preferred_username' => null]]),
@@ -36,31 +36,34 @@ class TwitchAuth extends Auth {
 	 * @return AuthenticationResult Result of authentication attempt
 	 * @throws AuthenticationException Thrown when unable to authenticate
 	 */
-	public function Authenticate() {
-		if(isset($_POST['code']) && $code = trim($_POST['code'])) {
-			$remember = false;
-			$returnHash = '';
-			if(isset($_POST['state'])) {
-				parse_str($_POST['state'], $state);
-				$remember = isset($state['remember']);
-				if(isset($state['returnHash']) && substr($state['returnHash'], 0, 1) == '#')
-					$returnHash = $state['returnHash'];
-			}
-			$tokens = $this->GetTokens($code);
-			if(isset($tokens->id_token) && $idToken = $tokens->id_token) {
-				$id = explode('.', $idToken);
-				$id = json_decode(base64_decode($id[1]));
-				if(isset($id->nonce) && self::ValidateNonce($id->nonce))
-					return new AuthenticationResult(
-						$remember, $returnHash, trim($id->sub), trim($id->email), trim($id->preferred_username), '', trim($id->picture),
-						'https://www.twitch.tv/' . trim($id->preferred_username)
-					);
-				else
-					throw new AuthenticationException('Unable to validate ID token — authentication failed');
-			} else
-				throw new AuthenticationException('Response from Twitch did not include id_token — authentication failed');
-		} else
+	public function Authenticate(): AuthenticationResult {
+		if (!isset($_POST['code']) || !$code = trim($_POST['code']))
 			throw new AuthenticationException('Code not present — cannot request ID token');
+		$remember = false;
+		$returnHash = '';
+		if (isset($_POST['state'])) {
+			parse_str($_POST['state'], $state);
+			$remember = isset($state['remember']);
+			if (isset($state['returnHash']) && substr($state['returnHash'], 0, 1) == '#')
+				$returnHash = $state['returnHash'];
+		}
+		$tokens = $this->GetTokens($code);
+		if (!isset($tokens->id_token) || !($idToken = $tokens->id_token))
+			throw new AuthenticationException('Response from Twitch did not include id_token — authentication failed');
+		$id = explode('.', $idToken);
+		$id = json_decode(base64_decode($id[1]));
+		if (!isset($id->nonce) || !self::ValidateNonce($id->nonce))
+			throw new AuthenticationException('Unable to validate ID token — authentication failed');
+		return new AuthenticationResult(
+			$remember,
+			$returnHash,
+			trim($id->sub),
+			trim($id->email),
+			trim($id->preferred_username),
+			'',
+			trim($id->picture),
+			'https://www.twitch.tv/' . trim($id->preferred_username)
+		);
 	}
 
 	/**
@@ -68,7 +71,7 @@ class TwitchAuth extends Auth {
 	 * @param string $code Auth code that should have come from twitch but needs to be verified
 	 * @return object Object containing access token and ID token
 	 */
-	private function GetTokens(string $code) {
+	private function GetTokens(string $code): object {
 		$data = [
 			'client_id' => KeysTwitch::ClientId,
 			'client_secret' => KeysTwitch::ClientSecret,

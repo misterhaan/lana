@@ -1,5 +1,5 @@
 <?php
-if(!defined('CLASS_PATH'))
+if (!defined('CLASS_PATH'))
 	define('CLASS_PATH', dirname(__DIR__) . '/');
 
 require_once CLASS_PATH . 'auth.php';
@@ -23,17 +23,17 @@ class SteamAuth extends Auth {
 	 * @param string $returnHash Location hash (starting with #) to return to after sign in
 	 * @return string URL for signing in via Steam
 	 */
-	public function GetUrl(bool $remember, string $returnHash) {
+	public function GetUrl(bool $remember, string $returnHash): string {
 		require_once CLASS_PATH . 'url.php';
 		$returnParams = [
 			'nonce' => self::GenerateNonce()
 		];
-		if($returnHash && $returnHash != '#')
+		if ($returnHash && $returnHash != '#')
 			$returnParams['returnHash'] = $returnHash;
 		$requestParams = [
 			'openid.ns' => self::OpenIdNamespace,
 			'openid.mode' => 'checkid_setup',
-			'openid.return_to' => $this->GetRedirectUrl() . '?' . ($remember ? 'remember&': '') . http_build_query($returnParams),
+			'openid.return_to' => $this->GetRedirectUrl() . '?' . ($remember ? 'remember&' : '') . http_build_query($returnParams),
 			'openid.realm' => Url::FullUrl('/'),
 			'openid.identity' => self::OpenIdIdentifier,
 			'openid.claimed_id' => self::OpenIdIdentifier
@@ -46,33 +46,31 @@ class SteamAuth extends Auth {
 	 * @return AuthenticationResult Result of authentication attempt
 	 * @throws AuthenticationException Thrown when unable to authenticate
 	 */
-	public function Authenticate() {
+	public function Authenticate(): AuthenticationResult {
 		// Note that even thought the variable names are sent formatted like openid.signed,
 		// PHP doesn't allow dots and changes them to underscores, resulting in names
 		// like openid_signed.  Since the original names also include underscores, there's
 		// no way to change them back so this code just uses them with underscores.
-		if(isset($_POST['openid_claimed_id']))
-			if(isset($_POST['openid_assoc_handle'], $_POST['openid_signed'], $_POST['openid_sig']))
-				if(isset($_POST['nonce']) && self::ValidateNonce($_POST['nonce']) && $this->Validate()) {
-					$id = explode('/', $_POST['openid_claimed_id']);
-					$id = $id[count($id) - 1];
-					$remember = isset($_POST['remember']);
-					$returnHash = isset($_POST['returnHash']) && substr($_POST['returnHash'], 0, 1) == '#' ? $_POST['returnHash'] : '';
-					$info = $this->GetPlayerInfo($id);
-					return new AuthenticationResult($remember, $returnHash, $id, '', $info->username, $info->realName, $info->avatar, $info->profile);
-				} else
-					throw new AuthenticationException('Unable to validate request origin — authentication failed');
-			else
-				throw new AuthenticationException('Missing openid signature information — cannot validate authentication');
-		else
+		if (!isset($_POST['openid_claimed_id']))
 			throw new AuthenticationException('Claimed ID not present — cannot validate authentication');
+		if (!isset($_POST['openid_assoc_handle'], $_POST['openid_signed'], $_POST['openid_sig']))
+			throw new AuthenticationException('Missing openid signature information — cannot validate authentication');
+		if (!isset($_POST['nonce']) || !self::ValidateNonce($_POST['nonce']) || !$this->Validate())
+			throw new AuthenticationException('Unable to validate request origin — authentication failed');
+
+		$id = explode('/', $_POST['openid_claimed_id']);
+		$id = $id[count($id) - 1];
+		$remember = isset($_POST['remember']);
+		$returnHash = isset($_POST['returnHash']) && substr($_POST['returnHash'], 0, 1) == '#' ? $_POST['returnHash'] : '';
+		$info = $this->GetPlayerInfo($id);
+		return new AuthenticationResult($remember, $returnHash, $id, '', $info->username, $info->realName, $info->avatar, $info->profile);
 	}
 
 	/**
 	 * Validate that a sign-in result actualy came from Steam.
 	 * @return bool True if authentication information is valid
 	 */
-	private static function Validate() {
+	private static function Validate(): bool {
 		$data = [
 			'openid.assoc_handle' => $_POST['openid_assoc_handle'],
 			'openid.signed' => $_POST['openid_signed'],
@@ -80,13 +78,13 @@ class SteamAuth extends Auth {
 			'openid.ns' => self::OpenIdNamespace,
 			'openid.mode' => 'check_authentication'
 		];
-		foreach(explode(',', $_POST['openid_signed']) as $var)
+		foreach (explode(',', $_POST['openid_signed']) as $var)
 			$data['openid.' . $var] = $_POST['openid_' . str_replace('.', '_', $var)];
 		$response = self::PostRequest(self::Login, $data);
 		$resarr = [];
-		foreach(explode("\n", $response) as $line) {
+		foreach (explode("\n", $response) as $line) {
 			$varval = explode(':', $line, 2);
-			if(count($varval) == 2)
+			if (count($varval) == 2)
 				$resarr[trim($varval[0])] = trim($varval[1]);
 		}
 		return isset($resarr['ns'], $resarr['is_valid']) && $resarr['ns'] == self::OpenIdNamespace && $resarr['is_valid'] == 'true';
@@ -97,12 +95,12 @@ class SteamAuth extends Auth {
 	 * @param string $id SteamID64 to look up
 	 * @return PlayerInfo Player info object
 	 */
-	private static function GetPlayerInfo(string $id) {
+	private static function GetPlayerInfo(string $id): PlayerInfo {
 		$response = self::GetRequest(self::Profile . $id . '?xml=1');
-		if($xml = simplexml_load_string($response))
-			if(!$xml->error) {
+		if ($xml = simplexml_load_string($response))
+			if (!$xml->error) {
 				$realName = html_entity_decode((string)$xml->steamID);
-				if(isset($xml->customURL) && (string)$xml->customURL) {
+				if (isset($xml->customURL) && (string)$xml->customURL) {
 					$username = (string)$xml->customURL;
 					$profile = 'https://steamcommunity.com/id/' . $username;
 				} else {
@@ -122,9 +120,8 @@ class SteamAuth extends Auth {
 class PlayerInfo {
 	/**
 	 * Username of this account.
-	 * @var string
 	 */
-	public $username;
+	public string $username;
 
 	/**
 	 * Real name of this account
@@ -134,15 +131,13 @@ class PlayerInfo {
 
 	/**
 	 * URL to this account's profile
-	 * @var string
 	 */
-	public $profile;
+	public string $profile;
 
 	/**
 	 * URL to this account's avatar
-	 * @var string
 	 */
-	public $avatar;
+	public string $avatar;
 
 	/**
 	 * Create a player profile object.

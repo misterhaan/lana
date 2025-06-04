@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Players link their email address(es) so other players can find them, and set
  * one of those as the address LANA should use to contact them.
@@ -13,20 +14,17 @@ class Email {
 	 * @param bool $makePrimary True if the email should be made the primary email for the player
 	 * @throws DatabaseException Thrown when the database is unable to complete a request
 	 */
-	public static function Add(mysqli $db, string $address, int $player, int $profile, bool $makePrimary) {
-		$makePrimary = +$makePrimary;
-		if($makePrimary)
+	public static function Add(mysqli $db, string $address, int $player, int $profile, bool $makePrimary): void {
+		if ($makePrimary)
 			self::ClearPrimary($db, $player);
-		if($add = $db->prepare('insert into email (address, player, profile, isPrimary) values (?, ?, ?, ?)'))
-			if($add->bind_param('siii', $address, $player, $profile, $makePrimary))
-				if($add->execute())
-					$add->close();
-				else
-					throw new DatabaseException('Error adding email', $add);
-			else
-				throw new DatabaseException('Error binding parameters to add email', $add);
-		else
-			throw new DatabaseException('Error preparing to add email', $db);
+		try {
+			$insert = $db->prepare('insert into email (address, player, profile, isPrimary) values (?, ?, ?, ?)');
+			$insert->bind_param('siii', $address, $player, $profile, $makePrimary);
+			$insert->execute();
+			$insert->close();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error adding email', $mse);
+		}
 	}
 
 	/**
@@ -35,12 +33,12 @@ class Email {
 	 * @param string $address Potential email address to check
 	 * @return bool True if address looks like an email and isn't example.com
 	 */
-	public static function Valid(string $address) {
+	public static function Valid(string $address): bool {
 		$address = explode('@', $address);
-		if(count($address) != 2)
+		if (count($address) != 2)
 			return false;
 		$domain = explode('.', $address[1]);
-		if(count($domain) < 2)
+		if (count($domain) < 2)
 			return false;
 		return strtolower(substr($address[1], -11)) != 'example.com';
 	}
@@ -49,29 +47,25 @@ class Email {
 	 * Look up the player ID an email is associated with.
 	 * @param mysqli $db Database connection object
 	 * @param string $address Email address to look up
-	 * @return int|bool Player ID linked to the email, or false if none
+	 * @return ?int Player ID linked to the email, or null if none
 	 * @throws DatabaseException Thrown when the database is unable to complete a request
 	 */
-	public static function UsedBy(mysqli $db, string $address) {
-		if($get = $db->prepare('select player from email where address=? limit 1'))
-			if($get->bind_param('s', $address))
-				if($get->execute())
-					if($get->bind_result($player))
-						if($get->fetch()) {
-							$get->close();
-							return $player;
-						} else {
-							$get->close();
-							return false;
-						}
-					else
-						throw new DatabaseException('Error binding result of email address lookup', $get);
-				else
-					throw new DatabaseException('Error executing email address lookup', $get);
-			else
-				throw new DatabaseException('Error binding email address to look up', $get);
-		else
-			throw new DatabaseException('Error preparing to look up email address', $db);
+	public static function UsedBy(mysqli $db, string $address): ?int {
+		try {
+			$select = $db->prepare('select player from email where address=? limit 1');
+			$select->bind_param('s', $address);
+			$select->execute();
+			$select->bind_result($player);
+			if ($select->fetch()) {
+				$select->close();
+				return $player;
+			} else {
+				$select->close();
+				return null;
+			}
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error looking up email address', $mse);
+		}
 	}
 
 	/**
@@ -82,16 +76,14 @@ class Email {
 	 * @param int $player Player ID whose emails should be affected
 	 * @throws DatabaseException Thrown when the database isn't able to complete a request
 	 */
-	private static function ClearPrimary(mysqli $db, int $player) {
-		if($set = $db->prepare('update email set isPrimary=0 where player=?'))
-			if($set->bind_param('i', $player))
-				if($set->execute())
-					$set->close();
-				else
-					throw new DatabaseException('Error clearing primary flag from other email addresses', $set);
-			else
-				throw new DatabaseException('Error binding player ID to update email addresses', $set);
-		else
-			throw new DatabaseException('Error preparing to update email addresses', $db);
+	private static function ClearPrimary(mysqli $db, int $player): void {
+		try {
+			$update = $db->prepare('update email set isPrimary=0 where player=?');
+			$update->bind_param('i', $player);
+			$update->execute();
+			$update->close();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error clearing primary flag from other email addresses', $mse);
+		}
 	}
 }

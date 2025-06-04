@@ -8,7 +8,7 @@ class Cookie {
 	 * @param mysqli $db Database connection object
 	 * @param int $player ID of player to remember
 	 */
-	public static function Remember(mysqli $db, int $player) {
+	public static function Remember(mysqli $db, int $player): void {
 		$series = self::StartSeries($db);
 		self::CreateToken($db, $player, $series);
 	}
@@ -17,41 +17,36 @@ class Cookie {
 	 * Look up the player for an autosignin cookie.  Removes cookie if invalid or
 	 * expired.
 	 * @param mysqli $db Database connection object
-	 * @return int|bool Player ID from verified token, or false if unable to verify
+	 * @return ?int Player ID from verified token, or null if unable to verify
 	 * @throws DatabaseException Thrown when the database cannot complete a request
 	 */
-	public static function Verify(mysqli $db) {
-		if (isset($_COOKIE[self::Name]) && $cookie = trim($_COOKIE[self::Name])) {
-			$cookie = explode(':', $cookie);
-			if (count($cookie) == 2) {
-				$series = $cookie[0];
-				$token = base64_decode($cookie[1]);
-				if ($get = $db->prepare('select tokenHash, expires>now(), player as active from cookie where series=? limit 1'))
-					if ($get->bind_param('s', $series))
-						if ($get->execute())
-							if ($get->bind_result($tokenHash, $active, $player)) {
-								if ($get->fetch()) {
-									$get->close();
-									$get = false;
-									if (+$active && $tokenHash == base64_encode(hash('sha512', $token, true))) {
-										self::CreateToken($db, +$player, $series);  // successful login means we need a fresh token for next time
-										return +$player;
-									} else
-										self::DeleteSeries($db, $series);  // expired or incorrect token means we should delete it
-								}
-							} else
-								throw new DatabaseException('Error binding cookie look up result', $get);
-						else
-							throw new DatabaseException('Error executing cookie look up query', $get);
-					else
-						throw new DatabaseException('Error binding series identifier to look up cookie', $get);
-				else
-					throw new DatabaseException('Error preparing to look up cookie', $db);
+	public static function Verify(mysqli $db): ?int {
+		if (!isset($_COOKIE[self::Name]) || !($cookie = trim($_COOKIE[self::Name])))
+			return null;
+		$cookie = explode(':', $cookie);
+		if (count($cookie) != 2)
+			return null;
+		$series = $cookie[0];
+		$token = base64_decode($cookie[1]);
+		try {
+			$select = $db->prepare('select tokenHash, expires>now(), player from cookie where series=? limit 1');
+			$select->bind_param('s', $series);
+			$select->execute();
+			$select->bind_result($tokenHash, $active, $player);
+			if ($select->fetch()) {
+				$select->close();
+				if ($active && $tokenHash == base64_encode(hash('sha512', $token, true))) {
+					self::CreateToken($db, $player, $series);  // successful login means we need a fresh token for next time
+					return $player;
+				}
+				self::DeleteSeries($db, $series);  // expired or incorrect token means we should delete it
 			}
 			require_once 'url.php';
 			setcookie(self::Name, '', time() - 3600, Url::InstallPath() . '/', $_SERVER['SERVER_NAME'], true);
+			return null;
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error looking up cookie', $mse);
 		}
-		return false;
 	}
 
 	/**
@@ -59,7 +54,7 @@ class Cookie {
 	 * the user has signed out.  Called even if there is no autosignin series.
 	 * @param mysqli $db Database connection object
 	 */
-	public static function Forget(mysqli $db) {
+	public static function Forget(mysqli $db): void {
 		if (isset($_COOKIE[self::Name]) && $cookie = trim($_COOKIE[self::Name])) {
 			$cookie = explode(':', $cookie);
 			if (count($cookie) == 2)
@@ -72,26 +67,24 @@ class Cookie {
 	 * Generate a new series number.  Should only be used when logging in with
 	 * remember me checked.  Series number is guaranteed to be unique.
 	 * @param mysqli $db Database connection object
-	 * @return string New series number, or false if unable to generate one
+	 * @return string New series number
 	 * @throws DatabaseException Thrown when the database cannot complete a request
 	 */
-	private static function StartSeries(mysqli $db) {
-		if ($chk = $db->prepare('select 1 from cookie where series=? limit 1'))
-			if ($chk->bind_param('s', $series)) {
-				do {
-					$chk->free_result();
-					$series = base64_encode(openssl_random_pseudo_bytes(12));
-					if ($chk->execute())
-						$chk->store_result();
-					else
-						throw new DatabaseException('Error executing check for duplicate series ID', $chk);
-				} while ($chk->num_rows > 0);
-				$chk->close();
-				return $series;
-			} else
-				throw new DatabaseException('Error binding series ID for duplicate check', $chk);
-		else
-			throw new DatabaseException('Error preparing to check for duplicate series ID', $db);
+	private static function StartSeries(mysqli $db): string {
+		try {
+			$chk = $db->prepare('select 1 from cookie where series=? limit 1');
+			$chk->bind_param('s', $series);
+			do {
+				$chk->free_result();
+				$series = base64_encode(openssl_random_pseudo_bytes(12));
+				$chk->execute();
+				$chk->store_result();
+			} while ($chk->num_rows > 0);
+			$chk->close();
+			return $series;
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error generating unique series ID', $mse);
+		}
 	}
 
 	/**
@@ -101,23 +94,21 @@ class Cookie {
 	 * @param string $series Login series identifier
 	 * @throws DatabaseException Thrown when the database cannot complete a request
 	 */
-	private static function CreateToken(mysqli $db, int $player, string $series) {
+	private static function CreateToken(mysqli $db, int $player, string $series): void {
 		$token = openssl_random_pseudo_bytes(32);
 		$tokenHash = base64_encode(hash('sha512', $token, true));
 		$token = base64_encode($token);
 		$expireDays = self::ExpireDays;
-		if ($put = $db->prepare('replace into cookie (series, tokenHash, expires, player) values (?, ?, now() + interval ? day, ?)')) {
-			if ($put->bind_param('ssii', $series, $tokenHash, $expireDays, $player))
-				if ($put->execute()) {
-					require_once 'url.php';
-					setcookie(self::Name, $series . ':' . $token, time() + self::ExpireDays * 86400, Url::InstallPath() . '/', $_SERVER['SERVER_NAME'], true);
-				} else
-					throw new DatabaseException('Error saving cookie', $put);
-			else
-				throw new DatabaseException('Error binding cookie parameters', $put);
-			$put->close();
-		} else
-			throw new DatabaseException('Error preparing to save cookie', $db);
+		try {
+			$replace = $db->prepare('replace into cookie (series, tokenHash, expires, player) values (?, ?, now() + interval ? day, ?)');
+			$replace->bind_param('ssii', $series, $tokenHash, $expireDays, $player);
+			$replace->execute();
+			require_once 'url.php';
+			setcookie(self::Name, $series . ':' . $token, time() + self::ExpireDays * 86400, Url::InstallPath() . '/', $_SERVER['SERVER_NAME'], true);
+			$replace->close();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error saving cookie', $mse);
+		}
 	}
 
 	/**
@@ -128,16 +119,14 @@ class Cookie {
 	 * @param string $series Series identifier to delete
 	 * @throws DatabaseException Thrown when the database cannot complete a request
 	 */
-	private static function DeleteSeries(mysqli $db, string $series) {
-		if ($del = $db->prepare('delete from cookie where series=? or expires<now()'))
-			if ($del->bind_param('s', $series))
-				if ($del->execute())
-					$del->close();
-				else
-					throw new DatabaseException('Error deleting cookies', $del);
-			else
-				throw new DatabaseException('Error binding series ID for cookie deletion', $del);
-		else
-			throw new DatabaseException('Error preparing to delete cookies', $db);
+	private static function DeleteSeries(mysqli $db, string $series): void {
+		try {
+			$delete = $db->prepare('delete from cookie where series=? or expires<now()');
+			$delete->bind_param('s', $series);
+			$delete->execute();
+			$delete->close();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error deleting cookies', $mse);
+		}
 	}
 }

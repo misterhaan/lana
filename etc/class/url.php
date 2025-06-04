@@ -8,7 +8,7 @@ class Url {
 	 * A more useful document root (that's correct when there’s an alias).
 	 * @return string Full OS path to the webserver root path
 	 **/
-	public static function DocRoot() {
+	public static function DocRoot(): string {
 		if (!self::$docRoot)
 			// CONTEXT_DOCUMENT_ROOT is set when an alias or similar is used, which makes
 			// DOCUMENT_ROOT incorrect for this purpose.  assume the presence of an alias
@@ -25,7 +25,7 @@ class Url {
 	 * @param string $rootUrl Application URL
 	 * @return string Absolute URL
 	 **/
-	public static function FullUrl($rootUrl) {
+	public static function FullUrl(string $rootUrl): string {
 		if ($rootUrl[0] != '/')
 			$rootUrl = '/' . $rootUrl;
 		return self::Scheme() . '://' . self::Host() . self::InstallPath() . $rootUrl;
@@ -36,7 +36,7 @@ class Url {
 	 * a slash but does not end with one.
 	 * @return string Application path on the webserver
 	 **/
-	public static function InstallPath() {
+	public static function InstallPath(): string {
 		if (self::$path === false) {  // need to check against false exactly because it can be an empty string
 			self::$path = dirname(dirname(substr(__DIR__, strlen(self::DocRoot()))));
 			if (self::$path == '/')
@@ -50,7 +50,7 @@ class Url {
 	 * Get the URL scheme for this website (usually https or http).
 	 * @return string URL scheme for this website
 	 **/
-	private static function Scheme() {
+	private static function Scheme(): string {
 		if (!self::$scheme)
 			self::$scheme = isset($_SERVER['REQUEST_SCHEME'])
 				? $_SERVER['REQUEST_SCHEME']
