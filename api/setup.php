@@ -144,7 +144,7 @@ class KeysTwitch {
 	 * @return string Contents of the keys template file
 	 */
 	private static function GetKeysTemplate(): string {
-		return file_get_contents('../etc/lanaKeys.template.php');
+		return file_get_contents(Url::DocRoot() . '/etc/class/lanaKeys.template.php');
 	}
 
 	/**
