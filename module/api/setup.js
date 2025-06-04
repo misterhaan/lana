@@ -22,15 +22,19 @@ export default class SetupApi extends ApiBase {
 	 * @param {string} pass - Database password
 	 * @param {string} twitchId - Client ID for Twitch API
 	 * @param {string} twitchSecret - Client secret for Twitch API
+	 * @param {string} googleId - Client ID for Google API
+	 * @param {string} googleSecret - Client secret for Google API
 	 */
-	static ConfigureConnections(host, name, user, pass, twitchId, twitchSecret) {
+	static ConfigureConnections(host, name, user, pass, twitchId, twitchSecret, googleId, googleSecret) {
 		return super.POST(urlbase + "configureConnections", {
 			host: host,
 			name: name,
 			user: user,
 			pass: pass,
 			twitchId: twitchId,
-			twitchSecret: twitchSecret
+			twitchSecret: twitchSecret,
+			googleId: googleId,
+			googleSecret: googleSecret
 		});
 	}
 

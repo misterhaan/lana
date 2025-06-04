@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Access keys template for LAN Ahead.  Copy one directory level up from
  * document root, name .lanaKeys.php, and fill in with access values.  This
@@ -44,6 +45,26 @@ class KeysTwitch {
 
 	/**
 	 * Client secret for Twitch application (must create a new secret because it
+	 * will not display)
+	 * @var string
+	 */
+	const ClientSecret = '';
+}
+
+/**
+ * Client ID and secret for connecting to Google.  These can be found at
+ * https://console.cloud.google.com/auth/clients after creating a new client, or
+ * choosing an existing client.
+ */
+class KeysGoogle {
+	/**
+	 * Client ID for Google application
+	 * @var string
+	 */
+	const ClientId = '';
+
+	/**
+	 * Client secret for Google application (must create a new secret because it
 	 * will not display)
 	 * @var string
 	 */

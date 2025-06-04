@@ -19,13 +19,14 @@ class SetupApi extends Api {
 			$result->stepData = "File not found";
 		else {
 			require_once(dirname($docroot) . '/.lanaKeys.php');
-			if (!class_exists('KeysDB') || !class_exists('KeysTwitch'))  // TODO:  check for other sites
+			if (!class_exists('KeysDB') || !class_exists('KeysTwitch') || !class_exists('KeysGoogle'))
 				$result->stepData = "Class not defined";
 			elseif (
 				!defined('KeysDB::Host') || !defined('KeysDB::Name') || !defined('KeysDB::User') || !defined('KeysDB::Pass')
 				|| !KeysDB::Host || !KeysDB::Name || !KeysDB::User || !KeysDB::Pass
 				|| !defined('KeysTwitch::ClientId') || !defined('KeysTwitch::ClientSecret') || !KeysTwitch::ClientId || !KeysTwitch::ClientSecret
-			)  // TODO:  check for other sites
+				|| !defined('KeysGoogle::ClientId') || !defined('KeysGoogle::ClientSecret') || !KeysGoogle::ClientId || !KeysGoogle::ClientSecret
+			)
 				$result->stepData = "Class incomplete";
 			else {
 				$result->level = -3;
@@ -76,8 +77,9 @@ class SetupApi extends Api {
 			|| !($host = trim($_POST['host'])) || !($name = trim($_POST['name']))
 			|| !($user = trim($_POST['user'])) || !($pass = $_POST['pass'])
 			|| !($twitchId = trim($_POST['twitchId'])) || !($twitchSecret = trim($_POST['twitchSecret']))
+			|| !($googleId = trim($_POST['googleId'])) || !($googleSecret = trim($_POST['googleSecret']))
 		)
-			self::NeedMoreInfo('Parameters host, name, user, and pass are all required and cannot be blank.');
+			self::NeedMoreInfo('Parameters host, name, user, pass, twitchId, twitchSecret, googleId, and googleSecret are all required and cannot be blank.');
 		require_once CLASS_PATH . 'url.php';
 		$path = dirname(Url::DocRoot()) . '/.lanaKeys.php';
 		$contents = '<?php
@@ -90,6 +92,10 @@ class KeysDB {
 class KeysTwitch {
 	const ClientId = \'' . addslashes($twitchId) . '\';
 	const ClientSecret = \'' . addslashes($twitchSecret) . '\';
+}
+class KeysGoogle {
+	const ClientId = \'' . addslashes($googleId) . '\';
+	const ClientSecret = \'' . addslashes($googleSecret) . '\';
 }';
 		if ($fh = fopen($path, 'w')) {
 			fwrite($fh, $contents);

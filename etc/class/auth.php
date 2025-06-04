@@ -18,6 +18,10 @@ class AuthController {
 		[
 			'id' => 'twitch',
 			'name' => 'Twitch'
+		],
+		[
+			'id' => 'google',
+			'name' => 'Google'
 		]
 	];
 

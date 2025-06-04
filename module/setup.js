@@ -109,6 +109,11 @@ createApp({
 					secret: "",
 					showSecret: false
 				},
+				google: {
+					id: "",
+					secret: "",
+					showSecret: false
+				},
 				manual: false,
 				saving: false,
 				checking: false
@@ -156,6 +161,16 @@ createApp({
 												break;
 										}
 										break;
+									case "KeysGoogle":
+										switch(valueMatch[1]) {
+											case "ClientId":
+												lines[i] = lines[i].replace("''", `'${this.google.id}'`);
+												break;
+											case "ClientSecret":
+												lines[i] = lines[i].replace("''", `'${this.google.secret}'`);
+												break;
+										}
+										break;
 								}
 							}
 						}
@@ -168,8 +183,8 @@ createApp({
 		methods: {
 			Save() {
 				this.saving = true;
-				SetupApi.ConfigureConnections(this.database.host, this.database.name,
-					this.database.user, this.database.pass, this.twitch.id, this.twitch.secret).done(result => {
+				SetupApi.ConfigureConnections(this.database.host, this.database.name, this.database.user, this.database.pass,
+					this.twitch.id, this.twitch.secret, this.google.id, this.google.secret).done(result => {
 						if(result.saved) {
 							this.$emit("log-step", "Saved database connection configuration to " + result.path);
 							this.$emit("set-db-info", { name: this.name, user: this.user, pass: this.pass });
@@ -221,6 +236,18 @@ createApp({
 						<span class=label>Secret:</span>
 						<input v-model.trim=twitch.secret :type="twitch.showSecret ? 'text' : 'password'" required>
 						<button :class="twitch.showSecret ? 'hide' : 'show'" :title="twitch.showSecret ? 'Hide the secret' : 'Show the secret'" @click.prevent="twitch.showSecret = !twitch.showSecret"><span>{{twitch.showSecret ? "hide" : "show"}}</span></button>
+					</label>
+				</section>
+				<section class=singlelinefields id=googlekeys>
+					<h3>Google</h3>
+					<label title="Enter the client ID for this website as set up in Google">
+						<span class=label>Client ID:</span>
+						<input v-model.trim=google.id required>
+					</label>
+					<label title="Enter the client secret for this website as set up in Google (may need to generate a new one)">
+						<span class=label>Secret:</span>
+						<input v-model.trim=google.secret :type="google.showSecret ? 'text' : 'password'" required>
+						<button :class="google.showSecret ? 'hide' : 'show'" :title="google.showSecret ? 'Hide the secret' : 'Show the secret'" @click.prevent="google.showSecret = !google.showSecret"><span>{{google.showSecret ? "hide" : "show"}}</span></button>
 					</label>
 				</section>
 				<nav class=calltoaction><button :disabled=!hasAllRequiredFields :class="{working: saving}" @click.prevent=Save title="Save connection configuration">Save</button></nav>

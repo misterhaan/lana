@@ -9,6 +9,7 @@
 	margin: 3px 20px;
 	background-color: $dkmedgrey;
 	border-radius: $gentlecorner;
+
 	.percentvalue {
 		height: 10px;
 		background-color: $blue;
@@ -23,7 +24,8 @@
 }
 
 #dbconn,
-#twitchkeys {
+#twitchkeys,
+#googlekeys {
 	.label {
 		@include flex-item-fixed(105px);
 	}
@@ -32,6 +34,7 @@
 summary {
 	margin-left: 10px;
 }
+
 blockquote {
 	margin: 0 0 0 20px;
 	border-left: 3px solid $ltgrey;
@@ -45,6 +48,7 @@ pre {
 	color: $black;
 	overflow-x: auto;
 }
+
 code {
 	font-family: InconsolataGo, monospace;
 }

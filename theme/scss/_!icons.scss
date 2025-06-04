@@ -113,3 +113,13 @@
 		background-color: #fff;
 	}
 }
+
+.google:before {
+	font-family: FontawesomeBrands;
+	content: "\f1a0";
+
+	.filledIcons & {
+		color: #fff;
+		background-color: #4285f4;
+	}
+}

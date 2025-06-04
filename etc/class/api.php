@@ -61,9 +61,11 @@ abstract class Api {
 	 */
 	protected static function RequireAuthSiteKeys(): void {
 		self::RequireKeys();
-		// TODO:  check for other sites
-		if (!class_exists('KeysTwitch') || !defined('KeysTwitch::ClientId'))
-			self::NeedSetup('Twitch keys not configured.');
+		if (
+			!class_exists('KeysTwitch') || !defined('KeysTwitch::ClientId')
+			|| !class_exists('KeysGoogle') || !defined('KeysGoogle::ClientId')
+		)
+			self::NeedSetup('Twitch or Google keys not configured.');
 	}
 
 	/**
