@@ -1,6 +1,6 @@
 import { createApp } from "../external/vue.esm-browser.prod.js";
-import TitleBar from "./component/titlebar.js";
-import StatusBar from "./component/statusbar.js";
+import TitleBar from "./component/titleBar.js";
+import StatusBar from "./component/statusBar.js";
 import AuthApi from "./api/auth.js";
 import ValidateApi from "./api/validate.js";
 import md5 from "../external/md5.js";
@@ -139,7 +139,7 @@ createApp({
 	},
 	template: /*html*/ `
 		<div id=lana>
-			<titlebar></titlebar>
+			<titleBar></titleBar>
 			<main>
 				<h1 :class=siteId>Sign In</h1>
 				<p v-if=working class=loading>Processing sign-in...</p>
@@ -157,7 +157,7 @@ createApp({
 						different account.  Sign in with that account instead, and then
 						you can link this one from your settings.
 					</p>
-					<section class=singlelinefields id=newuser>
+					<section class=single-line-fields id=new-user>
 						<label title="Your username will identify you on LAN Ahead and is required">
 							<span class=label>Username:</span>
 							<input v-model.trim=regInfo.username required minlength=4 maxlength=20>
@@ -173,7 +173,7 @@ createApp({
 							<span class=validation :class=validation.email.status :title=validation.email.message></span>
 						</label>
 					</section>
-					<fieldset id=selectavatar>
+					<fieldset id=select-avatar>
 						<legend>Avatar:</legend>
 						<label v-if=regInfo.avatar title="Use the avatar associated with the account you just signed in">
 							<button role=radio :aria-checked="avatar == 'account'" @click="avatar = 'account'">
@@ -194,14 +194,14 @@ createApp({
 							<span>Default</span>
 						</label>
 					</fieldset>
-					<nav class=form id=newuserbuttons>
+					<nav class=form id=new-user-buttons>
 						<button :title="'Start LAN Ahead using your ' + regInfo.siteName + ' account'" @click=Register :disabled=!canRegister :class="{working: registering}">Continue</button>
 					</nav>
 				</template>
 			</main>
-			<statusbar :last-error=registerError></statusbar>
+			<statusBar :last-error=registerError></statusBar>
 		</div>
 	`
-}).component("titlebar", TitleBar)
-	.component("statusbar", StatusBar)
+}).component("titleBar", TitleBar)
+	.component("statusBar", StatusBar)
 	.mount("#lana");

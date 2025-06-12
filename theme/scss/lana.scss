@@ -3,12 +3,14 @@
 @import "!base";
 
 html {
-	background-color: $purplegrey;
-	color: $ltmedgrey;
+	background-color: $purpleGrey;
+	color: $lightMediumGrey;
+
 	@media(min-width: 600px) {
 		padding: 0 15px;
 	}
 }
+
 body {
 	padding: 0;
 	margin: 0 auto;
@@ -18,26 +20,35 @@ body {
 	font-size: 1.25em;
 	max-width: 1000px;
 }
+
 main {
-	background-color: $dkgrey;
-	color: $ltgrey;
-	display: inline-block;  // to keep child margins inside
+	background-color: $darkGrey;
+	color: $lightGrey;
+	display: inline-block; // to keep child margins inside
 	width: 100%;
+
 	@media(min-width: 600px) {
-		border-radius: $mediumcorner;
+		border-radius: $mediumCorner;
 	}
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
 	font-size: 1.25em;
 	font-family: 'Exo 2', sans-serif;
 	font-weight: normal;
 	margin: 20px 10px 5px;
 }
+
 h1 {
 	font-size: 1.5em;
 	margin: 5px 10px;
 	color: $orange;
+
 	&:before {
 		@include fa-label;
 		margin-right: 9px;
@@ -49,7 +60,9 @@ h1 {
 	color: $white;
 	outline: none;
 	text-decoration: inherit;
-	&:hover, &:focus {
+
+	&:hover,
+	&:focus {
 		text-decoration: underline;
 	}
 }
@@ -61,6 +74,7 @@ p {
 .loading:before {
 	@include fa-label;
 }
+
 .working:after {
 	// this is essentially fa-label but with the margin on the other side since it's after
 	@include fontawesome;
@@ -70,6 +84,7 @@ p {
 
 p.error {
 	display: flex;
+
 	&:before {
 		font-size: .85em;
 		color: $white;
@@ -79,20 +94,21 @@ p.error {
 		border-right: 1px solid $red;
 		margin-right: 5px;
 	}
+
 	border: 1px solid $red;
-	border-radius: $gentlecorner;
+	border-radius: $gentleCorner;
 }
 
 .avatar {
-	border-radius: $gentlecorner;
+	border-radius: $gentleCorner;
 	width: 48px;
 	height: 48px;
 }
 
 @import "!icons";
 @import "!forms";
-@import "!titlebar";
-@import "!statusbar";
+@import "!titleBar";
+@import "!statusBar";
 @import "settings";
-@import "signin";
+@import "signIn";
 @import "setup";

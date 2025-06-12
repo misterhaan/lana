@@ -63,7 +63,7 @@ const StatusBar = {
 			created(el) {
 				$(el).hide();
 			},
-			updated(el, bind, vnode) {
+			updated(el, bind, node) {
 				if(bind.value) {
 					if(toastTimeout) {
 						clearTimeout(toastTimeout);
@@ -73,7 +73,7 @@ const StatusBar = {
 					toastTimeout = setTimeout(() => {
 						toastTimeout = false;
 						$(el).fadeOut(1600, () => {
-							vnode.context[bind.expression] = false;
+							node.context[bind.expression] = false;
 						});
 					}, 5000);
 				} else
@@ -83,7 +83,7 @@ const StatusBar = {
 	},
 	mixins: [ClosePopup],
 	template: /*html*/ `
-		<footer id=statusbar>
+		<footer id=status-bar>
 			<div id=errorToast class=error v-toast=toastError>
 				{{toastError.message}}
 				<a class=close title="Dismiss this error" href=#dismissError @click.prevent=DismissToast><span>Dismiss</span></a>
@@ -92,7 +92,7 @@ const StatusBar = {
 				<header>
 					{{errors.length }} Error{{errors.length > 1 ? "s" : ""}}
 					<a class=minimize title="Minimize the error list" href=#hideErrors @click.prevent=HideErrors><span>Minimize</span></a>
-					<a class=close title="Dismiss all errors" href=#dismissAllErrrors @click.prevent=ClearErrors><span>Dismiss all</span></a>
+					<a class=close title="Dismiss all errors" href=#dismissAllErrors @click.prevent=ClearErrors><span>Dismiss all</span></a>
 				</header>
 				<ol class=errors>
 					<li v-for="error in errors">

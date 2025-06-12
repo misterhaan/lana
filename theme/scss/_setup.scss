@@ -5,15 +5,15 @@
 	src: url(InconsolataGo-Regular.woff);
 }
 
-.percentfield {
+.percent-field {
 	margin: 3px 20px;
-	background-color: $dkmedgrey;
-	border-radius: $gentlecorner;
+	background-color: $darkMediumGrey;
+	border-radius: $gentleCorner;
 
-	.percentvalue {
+	.percent-value {
 		height: 10px;
 		background-color: $blue;
-		border-radius: $gentlecorner;
+		border-radius: $gentleCorner;
 	}
 }
 
@@ -23,9 +23,9 @@
 	padding-left: 16px;
 }
 
-#dbconn,
-#twitchkeys,
-#googlekeys {
+#database-connection,
+#twitch-keys,
+#google-keys {
 	.label {
 		@include flex-item-fixed(105px);
 	}
@@ -37,14 +37,14 @@ summary {
 
 blockquote {
 	margin: 0 0 0 20px;
-	border-left: 3px solid $ltgrey;
+	border-left: 3px solid $lightGrey;
 }
 
 pre {
 	@extend p;
 	padding: 5px 10px;
-	border-radius: $gentlecorner;
-	background-color: $ltgrey;
+	border-radius: $gentleCorner;
+	background-color: $lightGrey;
 	color: $black;
 	overflow-x: auto;
 }

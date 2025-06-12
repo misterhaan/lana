@@ -1,4 +1,4 @@
-#statusbar {
+#status-bar {
 	@include flex-container;
 	margin: 4px 8px;
 	font-size: .8em;
@@ -8,11 +8,12 @@
 	bottom: 30px;
 	border: 3px solid $red;
 	border-left: none;
-	background: linear-gradient(90deg, $red 30px, $dkgrey 30px);  // makes the red behind the icon look like it goes all the way down
+	background: linear-gradient(90deg, $red 30px, $darkGrey 30px); // makes the red behind the icon look like it goes all the way down
 	color: $white;
-	border-radius: $gentlecorner;
+	border-radius: $gentleCorner;
 	padding: 2px 4px;
 	@include flex-container-baseline;
+
 	&:before {
 		@include fontawesome;
 		color: $white;
@@ -20,8 +21,10 @@
 		margin: -2px 6px -4px -2px;
 		padding: 2px 8px;
 	}
+
 	a {
-		color: $medgrey;
+		color: $mediumGrey;
+
 		&:hover {
 			color: $red;
 		}
@@ -32,18 +35,21 @@
 	bottom: 22px;
 	border: 3px solid $red;
 	border-top: none;
-	border-radius: $gentlecorner $gentlecorner $gentlecorner 0;
-	background-color: $dkgrey;
+	border-radius: $gentleCorner $gentleCorner $gentleCorner 0;
+	background-color: $darkGrey;
 	color: $white;
+
 	header {
 		@include flex-container-baseline;
 		padding: 0 4px;
 		background-color: $red;
 		color: $white;
+
 		a {
 			color: $white;
 		}
 	}
+
 	ol {
 		list-style-type: none;
 		margin: 0;
@@ -51,14 +57,18 @@
 		max-height: calc(100vh - 80px);
 		overflow-y: auto;
 	}
+
 	li {
 		@include flex-container-baseline;
 		padding: 2px 4px;
+
 		&:not(:first-child) {
 			border-top: 1px solid $red;
 		}
+
 		a {
-			color: $medgrey;
+			color: $mediumGrey;
+
 			&:hover {
 				color: $red;
 			}
@@ -70,16 +80,20 @@
 #errors {
 	position: fixed;
 	margin-right: 8px;
+
 	a {
 		@include fa-replaced;
 		@include flex-item-fixed;
+
 		&:first-child {
 			margin-left: auto;
 		}
+
 		&.minimize:before {
 			padding: 0 4px;
 			font-size: .6em;
 		}
+
 		&.close:before {
 			padding-left: 7px;
 		}
@@ -92,9 +106,10 @@
 	color: $white;
 	text-decoration: none;
 	background-color: $red;
-	border-radius: $gentlecorner;
+	border-radius: $gentleCorner;
 	padding: 0 7px 0 3px;
 	height: 21px;
+
 	&:before {
 		margin-right: 6px;
 	}

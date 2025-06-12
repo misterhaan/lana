@@ -3,39 +3,47 @@
 .cards {
 	padding: 0;
 	margin: 7px 15px;
+
 	li {
 		list-style-type: none;
 		display: inline-flex;
 		margin: 5px;
-		border-radius: $mediumcorner;
+		border-radius: $mediumCorner;
 	}
 }
+
 .linkedAccount {
 	background-color: $purple;
+
 	&:before {
 		text-align: center;
 		line-height: 48px;
 		width: 48px;
 		font-size: 1.5em;
-		border-radius: $mediumcorner 0 0 $mediumcorner;
+		border-radius: $mediumCorner 0 0 $mediumCorner;
 	}
+
 	a {
 		height: 48px;
+
 		.avatar {
 			border-radius: 0;
 		}
+
 		&:focus .avatar {
-			border-radius: $gentlecorner;
+			border-radius: $gentleCorner;
 			box-shadow: 0 0 0 3px $orange;
 		}
 	}
+
 	.actions {
-		border-radius: 0 $mediumcorner $mediumcorner 0;
+		border-radius: 0 $mediumCorner $mediumCorner 0;
 		padding-left: 3px;
+
 		button {
-			padding: 0 0 0 3px;  // there's less padding on the left than everywhere else
+			padding: 0 0 0 3px; // there's less padding on the left than everywhere else
 			margin: 3px;
-			border-radius: $gentlecorner;
+			border-radius: $gentleCorner;
 			cursor: pointer;
 		}
 	}
@@ -43,12 +51,14 @@
 
 #authNew {
 	margin: 10px 20px;
+
 	button {
 		padding: 0;
 		margin: 5px;
 		width: 48px;
 		height: 48px;
 		border-radius: 24px;
+
 		&:before {
 			cursor: pointer;
 			text-align: center;

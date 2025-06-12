@@ -56,8 +56,8 @@ const Signin = {
 		ClosePopup
 	],
 	template: /*html*/ `
-		<div id=userstatus>
-			<button id=usertrigger @click.prevent.stop="showMenu = !showMenu" :class="{open: showMenu}">Sign in</button>
+		<div id=user-status>
+			<button id=user-trigger @click.prevent.stop="showMenu = !showMenu" :class="{open: showMenu}">Sign in</button>
 			<div id=signin v-if=showMenu v-close-popup=HideMenu>
 				<p>Sign in securely with your account from one of these sites:</p>
 				<div id=authChoices class=filledIcons role=radiogroup>
@@ -67,7 +67,7 @@ const Signin = {
 				<button id=remember :class="{checked: remember, unchecked: !remember}" title="Save a secure key in this browser to sign in automatically"
 					aria-role=switch :aria-checked=remember @click="remember = !remember">Remember me
 				</button>
-				<nav class=calltoaction><button role=link :disabled="!chosenAuth || working" :title=buttonTooltip :class="{working: working}" @click=SignIn>
+				<nav class=call-to-action><button role=link :disabled="!chosenAuth || working" :title=buttonTooltip :class="{working: working}" @click=SignIn>
 					{{chosenAuth ? "Sign in with " + chosenAuth.name : "Sign in"}}
 				</button></nav>
 			</div>

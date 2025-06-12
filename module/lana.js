@@ -1,7 +1,7 @@
 import { createApp } from "../external/vue.esm-browser.prod.js";
 import AppName from "./appName.js";
-import TitleBar from "./component/titlebar.js";
-import StatusBar from "./component/statusbar.js";
+import TitleBar from "./component/titleBar.js";
+import StatusBar from "./component/statusBar.js";
 import Views from "./views.js";
 import Home from "./component/home.js";
 import Settings from "./component/settings.js";
@@ -76,8 +76,8 @@ const lana = createApp({
 					let params = false;
 					if(hash.length) {
 						params = {};
-						const paramlist = hash.join("!").split("/");
-						for(const p of paramlist) {
+						const paramList = hash.join("!").split("/");
+						for(const p of paramList) {
 							let pair = p.split("=");
 							if(pair.length > 1)
 								params[decodeURIComponent(pair.shift())] = decodeURIComponent(pair.join("="));
@@ -104,13 +104,13 @@ const lana = createApp({
 	},
 	template: /*html*/ `
 		<div id=lana>
-			<titlebar :auths=auths :player=player></titlebar>
+			<titleBar :auths=auths :player=player></titleBar>
 			<component :is=view.Name :view=subView :params=params :auths=auths :player=player @error="error = $event"></component>
-			<statusbar :last-error=error></statusbar>
+			<statusBar :last-error=error></statusBar>
 		</div>
 	`
-}).component("titlebar", TitleBar)
-	.component("statusbar", StatusBar)
+}).component("titleBar", TitleBar)
+	.component("statusBar", StatusBar)
 	.component(Views.Home.Name, Home)
 	.component(Views.Settings.Name, Settings)
 	.mount("#lana");

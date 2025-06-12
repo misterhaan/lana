@@ -1,7 +1,7 @@
 import { createApp } from "../external/vue.esm-browser.prod.js";
 import AppName from "./appName.js";
-import TitleBar from "./component/titlebar.js";
-import StatusBar from "./component/statusbar.js";
+import TitleBar from "./component/titleBar.js";
+import StatusBar from "./component/statusBar.js";
 import SetupApi from "./api/setup.js";
 import ReportError from "./mixin/reportError.js";
 
@@ -70,20 +70,20 @@ createApp({
 	},
 	template: /*html*/ `
 		<div id=lana>
-			<titlebar></titlebar>
+			<titleBar></titleBar>
 			<main>
 				<h1>Setup</h1>
-				<div class=percentfield><div class=percentvalue :style="{width: progress.percent + '%'}"></div></div>
+				<div class=percent-field><div class=percent-value :style="{width: progress.percent + '%'}"></div></div>
 				<ol class=stepsTaken v-if=stepsTaken.length v-for="step in stepsTaken">
 					<li>{{step}}</li>
 				</ol>
 				<component :is=progress.component :step-data=stepData :db-info=dbInfo @set-db-info="dbInfo = $event" @set-level="level = $event.level; stepData = $event.stepData" @log-step="stepsTaken.push($event)" @error="error = $event"></component>
 			</main>
-			<statusbar :last-error=error></statusbar>
+			<statusBar :last-error=error></statusBar>
 		</div>
 `
-}).component("titlebar", TitleBar)
-	.component("statusbar", StatusBar)
+}).component("titleBar", TitleBar)
+	.component("statusBar", StatusBar)
 	.component("checkingInstall", {
 		template: /*html*/ `
 			<article>
@@ -206,7 +206,7 @@ createApp({
 					be saved to the appropriate location, provided the web server can
 					write there.
 				</p>
-				<section class=singlelinefields id=dbconn>
+				<section class=single-line-fields id=database-connection>
 					<h3>Database</h3>
 					<label title="Enter the hostname for the database.  Usually the database is the same host as the web server, and the hostname should be 'localhost'">
 						<span class=label>Host:</span>
@@ -226,7 +226,7 @@ createApp({
 						<button :class="database.showPass ? 'hide' : 'show'" :title="database.showPass ? 'Hide the password' : 'Show the password'" @click.prevent="database.showPass = !database.showPass"><span>{{database.showPass ? "hide" : "show"}}</span></button>
 					</label>
 				</section>
-				<section class=singlelinefields id=twitchkeys>
+				<section class=single-line-fields id=twitch-keys>
 					<h3>Twitch</h3>
 					<label title="Enter the client ID for this website as set up in Twitch">
 						<span class=label>Client ID:</span>
@@ -238,7 +238,7 @@ createApp({
 						<button :class="twitch.showSecret ? 'hide' : 'show'" :title="twitch.showSecret ? 'Hide the secret' : 'Show the secret'" @click.prevent="twitch.showSecret = !twitch.showSecret"><span>{{twitch.showSecret ? "hide" : "show"}}</span></button>
 					</label>
 				</section>
-				<section class=singlelinefields id=googlekeys>
+				<section class=single-line-fields id=google-keys>
 					<h3>Google</h3>
 					<label title="Enter the client ID for this website as set up in Google">
 						<span class=label>Client ID:</span>
@@ -250,7 +250,7 @@ createApp({
 						<button :class="google.showSecret ? 'hide' : 'show'" :title="google.showSecret ? 'Hide the secret' : 'Show the secret'" @click.prevent="google.showSecret = !google.showSecret"><span>{{google.showSecret ? "hide" : "show"}}</span></button>
 					</label>
 				</section>
-				<nav class=calltoaction><button :disabled=!hasAllRequiredFields :class="{working: saving}" @click.prevent=Save title="Save connection configuration">Save</button></nav>
+				<nav class=call-to-action><button :disabled=!hasAllRequiredFields :class="{working: saving}" @click.prevent=Save title="Save connection configuration">Save</button></nav>
 				<section v-if=manual>
 					<h3>Unable to Save Connection Configuration</h3>
 					<details>
@@ -265,7 +265,7 @@ createApp({
 						<code>{{manual.path}}</code>
 					</p>
 					<pre><code>{{contents}}</code></pre>
-					<nav class=calltoaction><button :disabled=checking :class="{working: checking}" @click.prevent="Recheck(${SetupLevel.DatabaseConnectionDefined}, 'Confirmed database connection configuration file exists', 'Database connection configuration file not found.  Did you create it in the correct path?')" title="Check if ${AppName.Short} can read the database connection configuration">Continue</button></nav>
+					<nav class=call-to-action><button :disabled=checking :class="{working: checking}" @click.prevent="Recheck(${SetupLevel.DatabaseConnectionDefined}, 'Confirmed database connection configuration file exists', 'Database connection configuration file not found.  Did you create it in the correct path?')" title="Check if ${AppName.Short} can read the database connection configuration">Continue</button></nav>
 				</section>
 			</article>
 		`
@@ -313,7 +313,7 @@ grant all on \`{{name}}\`.* to '{{user}}'@'localhost' identified by '{{pass}}';<
 					paste the above statements followed by <code>exit</code> to get
 					back to the Linux command line.
 				</p>
-				<nav class=calltoaction><button :disabled=checking :class="{working: checking}" @click.prevent="Recheck(${SetupLevel.DatabaseExists}, 'Confirmed database exists', 'Cannot access database.  Did you create it and grant access for the configured user?')" title="Check if ${AppName.Short} has a database and can access it">Continue</button></nav>
+				<nav class=call-to-action><button :disabled=checking :class="{working: checking}" @click.prevent="Recheck(${SetupLevel.DatabaseExists}, 'Confirmed database exists', 'Cannot access database.  Did you create it and grant access for the configured user?')" title="Check if ${AppName.Short} has a database and can access it">Continue</button></nav>
 			</article>
 		`
 	}).component("installDatabase", {
@@ -344,7 +344,7 @@ grant all on \`{{name}}\`.* to '{{user}}'@'localhost' identified by '{{pass}}';<
 			<article>
 				<h2>Install Database</h2>
 				<p v-if=working class=loading>Installing a new database...</p>
-				<nav class=calltoaction v-if=!working><button @click.prevent=Install title="Try installing the ${AppName.Short} database again">Try Again</button></nav>
+				<nav class=call-to-action v-if=!working><button @click.prevent=Install title="Try installing the ${AppName.Short} database again">Try Again</button></nav>
 			</article>
 		`
 	}).component("upgradeDatabase", {
@@ -377,7 +377,7 @@ grant all on \`{{name}}\`.* to '{{user}}'@'localhost' identified by '{{pass}}';<
 				<p v-if=stepData.structureBehind>Database structure is {{stepData.structureBehind}} version{{stepData.structureBehind > 1 ? "s" : ""}} behind.</p>
 				<p v-if=stepData.dataBehind>Data is {{stepData.dataBehind}} version{{stepData.dataBehind > 1 ? "s" : ""}} behind.</p>
 				<p v-if=working class=loading>Upgrading...</p>
-				<nav class=calltoaction v-if=!working><button @click.prevent=Upgrade title="Try upgrading the ${AppName.Short} database again">Try Again</button></nav>
+				<nav class=call-to-action v-if=!working><button @click.prevent=Upgrade title="Try upgrading the ${AppName.Short} database again">Try Again</button></nav>
 			</article>
 		`
 	}).component("setupComplete", {
@@ -390,7 +390,7 @@ grant all on \`{{name}}\`.* to '{{user}}'@'localhost' identified by '{{pass}}';<
 				<p>
 					Setup has completed and ${AppName.Full} is ready for use.
 				</p>
-				<nav class=calltoaction><a href=.>Enter ${AppName.Full}</a></nav>
+				<nav class=call-to-action><a href=.>Enter ${AppName.Full}</a></nav>
 			</article>
 		`
 	}).mount("#lana");

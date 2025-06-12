@@ -1,10 +1,15 @@
 // form styles for LAN Ahead
 
-input, button, select, textarea {
+input,
+button,
+select,
+textarea {
 	font-family: inherit;
 	font-size: 1em;
 }
-input:not([type]),  // default type is text
+
+input:not([type]),
+// default type is text
 input[type=text],
 input[type=password],
 input[type=number],
@@ -12,53 +17,62 @@ input[type=email] {
 	padding: 3px 5px;
 	height: 20px;
 	border: none;
-	border-bottom: 1px solid $medgrey;
+	border-bottom: 1px solid $mediumGrey;
 	background: transparent;
 	color: inherit;
 	border-radius: 0;
+
 	&:focus {
 		border-bottom: 3px solid $orange;
 		padding-bottom: 1px;
 		outline: none;
 	}
 }
+
 select {
-	padding: 1px 5px 5px;  // needs to be 2px higher than the inputs
-	height: 27px;  // this actually works out to 20?  maybe it includes padding and border
+	padding: 1px 5px 5px; // needs to be 2px higher than the inputs
+	height: 27px; // this actually works out to 20?  maybe it includes padding and border
 	border: none;
-	border-bottom: 1px solid $medgrey;
+	border-bottom: 1px solid $mediumGrey;
 	border-radius: 0;
 	background: transparent;
+
 	&:focus {
 		border-bottom: 3px solid $purple;
 		padding-bottom: 3px;
 		outline: none;
 	}
 }
+
 input[type=number] {
 	padding-right: 0;
 	text-align: right;
 }
+
 textarea {
 	@include flex-item-fill;
 	padding: 1px 5px 0 7px;
 	border: none;
-	border-left: 1px solid $medgrey;
+	border-left: 1px solid $mediumGrey;
 	border-radius: 0;
 	background: transparent;
+
 	&:focus {
 		border-left: 3px solid $purple;
 		padding-left: 5px;
 		outline: none;
 	}
 }
+
 button {
 	background: transparent;
 	color: inherit;
 	border: none;
+
 	&:before {
 		@include fa-label;
 	}
+
 	&:focus {
 		outline: none;
 		box-shadow: 0 0 0 3px $orange;
@@ -68,7 +82,9 @@ button {
 label {
 	margin: 5px 20px;
 }
-h1, ul {
+
+h1,
+ul {
 	label {
 		margin: 0;
 	}
@@ -80,25 +96,30 @@ fieldset {
 	padding: 0;
 }
 
-.singlelinefields label,
-label.singlelinefields {
+.single-line-fields label,
+label.single-line-fields {
 	@include flex-container-baseline;
+
 	input,
 	select {
 		@include flex-item-fill;
 	}
 }
-.singlelinefields label {
+
+.single-line-fields label {
 	.validation:before {
 		margin-left: 5px;
 	}
+
 	button {
 		@include icon-button;
-		color: $ltmedgrey;
-		border-radius: $gentlecorner;
+		color: $lightMediumGrey;
+		border-radius: $gentleCorner;
+
 		&:last-child {
 			margin-right: 0;
 		}
+
 		&:hover,
 		&:focus {
 			background-color: $purple;
@@ -111,53 +132,61 @@ label.singlelinefields {
 	@include fa-label;
 }
 
-.calltoaction {
+.call-to-action {
 	text-align: center;
 }
+
 .form {
 	margin: 5px 20px 15px;
 }
-.calltoaction,
+
+.call-to-action,
 .form {
+
 	a,
 	button {
 		display: inline-block;
 		white-space: nowrap;
 		text-decoration: none;
-		border-radius: $gentlecorner;
+		border-radius: $gentleCorner;
 		background-color: $purple;
 		color: $white;
 		border: none;
 		padding: 5px 15px;
 		cursor: pointer;
+
 		&:before {
 			@include fa-label;
 		}
+
 		&:focus,
 		&:hover {
 			text-decoration: none;
 			outline: none;
 			box-shadow: 0 0 0 3px $orange;
 		}
+
 		&:disabled {
 			--sqrt2: 1.4142135623730950488016887242097;
-			background: repeating-linear-gradient(
-				45deg,
-				$dkmedgrey,
-				$dkmedgrey calc(3px / var(--sqrt2)),
-				transparent calc(3px / var(--sqrt2)),
-				transparent calc(6px / var(--sqrt2))
-			);
-			color: $medgrey;
+			background: repeating-linear-gradient(45deg,
+					$darkMediumGrey,
+					$darkMediumGrey calc(3px / var(--sqrt2)),
+					transparent calc(3px / var(--sqrt2)),
+					transparent calc(6px / var(--sqrt2)));
+			color: $mediumGrey;
 			cursor: not-allowed;
+
 			&:before {
-				color: $medgrey;
+				color: $mediumGrey;
 			}
 		}
 	}
 }
-.calltoaction {
-	a, button {
+
+.call-to-action {
+
+	a,
+	button {
 		margin: 10px;
 	}
 }

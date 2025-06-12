@@ -25,12 +25,12 @@ const PlayerMenu = {
 		ClosePopup
 	],
 	template: /*html*/ `
-		<div id=userstatus>
-			<button id=usertrigger @click.prevent.stop="showMenu = !showMenu" :class="{open: showMenu}">
+		<div id=user-status>
+			<button id=user-trigger @click.prevent.stop="showMenu = !showMenu" :class="{open: showMenu}">
 				<img class=avatar :src=player.avatar>
 				{{player.username}}
 			</button>
-			<nav id=useractions v-if=showMenu v-close-popup=HideMenu>
+			<nav id=user-actions v-if=showMenu v-close-popup=HideMenu>
 				<a href=#settings class=settings title="Change your settings" @click=HideMenu>Settings</a>
 				<button class=signout title="Sign out from ${AppName.Full}" @click=SignOut>Sign out</button>
 			</nav>

@@ -1,10 +1,12 @@
 // Title bar styles for LAN Ahead
 body {
 	padding-top: 30px;
+
 	@media(min-width: 600px) {
 		padding-top: 45px;
 	}
 }
+
 #titleBar {
 	background-color: $purple;
 	color: $white;
@@ -17,9 +19,10 @@ body {
 	width: calc(100% - 10px);
 
 	@media(min-width: 600px) {
-		border-radius: 0 0 $largecorner $largecorner;
+		border-radius: 0 0 $largeCorner $largeCorner;
 		width: calc(100% - 40px);
 	}
+
 	@media(min-width: 1030px) {
 		width: 990px;
 	}
@@ -34,6 +37,7 @@ body {
 	height: 20px;
 	display: inline-block;
 }
+
 #siteTitle {
 	font-size: inherit;
 	margin: 0 18px 0 7px;
@@ -43,18 +47,21 @@ body {
 	line-height: 26px;
 }
 
-#userstatus {
+#user-status {
 	margin-left: auto;
 	margin-right: 5px;
-	#usertrigger {
+
+	#user-trigger {
 		padding: 4px 7px 0;
 		line-height: 26px;
 		display: flex;
 		cursor: pointer;
+
 		&.open,
 		&:hover {
-			background-color: $ltpurple;
+			background-color: $lightPurple;
 		}
+
 		.avatar {
 			width: 24px;
 			height: 24px;
@@ -63,4 +70,4 @@ body {
 	}
 }
 
-@import "!useractions";
+@import "!userActions";
