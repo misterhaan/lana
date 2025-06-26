@@ -46,7 +46,7 @@ const Signin = {
 				this.working = true;
 				AuthApi.GetSignInUrl(this.chosenAuth.id, location.hash, this.remember).done(result => {
 					location = result;
-				}).fail(this.Error).always(() => {
+				}).always(() => {
 					this.working = false;
 				});
 			}

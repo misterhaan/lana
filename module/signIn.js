@@ -19,8 +19,6 @@ createApp({
 			working: false,
 			registering: false,
 			missingSiteId: false,
-			mainError: false,
-			registerError: false,
 			validation: {
 				username: {
 					status: "working",
@@ -66,9 +64,8 @@ createApp({
 					delete activeTimers.username;
 					ValidateApi.Username(newUsername).done(result => {
 						this.validation.username = result;
-					}).fail(error => {
+					}).fail(() => {
 						this.validation.username = { status: "invalid", message: "Error encountered validating username" };
-						this.RegisterError(error);
 					});
 				}, editTimeout);
 			}
@@ -90,9 +87,8 @@ createApp({
 					delete activeTimers.email;
 					ValidateApi.Email(newEmail).done(result => {
 						this.validation.email = result;
-					}).fail(error => {
+					}).fail(() => {
 						this.validation.email = { status: "invalid", message: "Error encountered validating email address" };
-						this.RegisterError(error);
 					});
 				}, editTimeout);
 			}
@@ -110,11 +106,11 @@ createApp({
 					this.avatar = result.avatar ? "account" : result.email ? "email" : "default";
 					this.regInfo = result;
 				}
-			}).fail(this.MainError).always(() => {
+			}).always(() => {
 				this.working = false;
 			});
 		} else {
-			this.MainError("Unable to determine login site from URL.  This may indicate a website configuration error.");
+			throw new Error("Unable to determine login site from URL.  This may indicate a website configuration error.");
 		}
 	},
 	methods: {
@@ -122,19 +118,9 @@ createApp({
 			this.registering = true;
 			AuthApi.Register(this.siteId, this.regInfo.username, this.regInfo.realName, this.regInfo.email, this.avatar).done(() => {
 				location.replace("." + this.regInfo.returnHash);
-			}).fail(this.RegisterError).always(() => {
+			}).always(() => {
 				this.registering = false;
 			});
-		},
-		MainError(error) {
-			this.mainError = typeof error == "string"
-				? error
-				: error.message;
-		},
-		RegisterError(error) {
-			this.registerError = typeof error == "string"
-				? new Error(error)
-				: error;
 		}
 	},
 	template: /*html*/ `
@@ -143,7 +129,6 @@ createApp({
 			<main>
 				<h1 :class=siteId>Sign In</h1>
 				<p v-if=working class=loading>Processing sign-in...</p>
-				<p v-if=mainError class=error>{{mainError}}</p>
 				<template v-if=regInfo>
 					<p>
 						Welcome to LAN Ahead!  According to our records, this is your first
@@ -199,7 +184,7 @@ createApp({
 					</nav>
 				</template>
 			</main>
-			<statusBar :last-error=registerError></statusBar>
+			<statusBar></statusBar>
 		</div>
 	`
 }).component("titleBar", TitleBar)

@@ -1,5 +1,4 @@
 import AppName from "../appName.js";
-import ReportError from "../mixin/reportError.js";
 import SettingsApi from "../api/settings.js";
 import AuthApi from "../api/auth.js";
 
@@ -17,7 +16,7 @@ const Accounts = {
 		this.loading = true;
 		SettingsApi.ListAccounts().done(result => {
 			this.accounts = result;
-		}).fail(this.Error).always(() => {
+		}).always(() => {
 			this.loading = false;
 		});
 	},
@@ -25,15 +24,14 @@ const Accounts = {
 		Add(site) {
 			AuthApi.GetSignInUrl(site, location.hash).done(result => {
 				location = result;
-			}).fail(this.Error);
+			});
 		},
 		Unlink(account) {
 			SettingsApi.UnlinkAccount(account.site, account.id).done(() => {
 				this.accounts.splice(this.accounts.indexOf(account), 1);
-			}).fail(this.Error);
+			});
 		}
 	},
-	mixins: [ReportError],
 	template: /*html*/ `
 		<article id=linkedAccounts>
 			<section>

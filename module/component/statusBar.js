@@ -1,41 +1,44 @@
 import AppName from "../appName.js";
 import ClosePopup from "../mixin/closePopup.js";
 
-let toastTimeout = false;
-
 const StatusBar = {
-	props: [
-		"lastError"
-	],
 	data() {
 		return {
 			errors: [],
-			toastError: false,
+			toastError: null,
 			showErrors: false
 		};
 	},
-	watch: {
-		lastError(error) {
+	created() {
+		window.addEventListener("error", e => {
+			this.NewError(e.error);
+			e.preventDefault();
+			e.stopPropagation();
+		});
+		window.addEventListener("unhandledrejection", e => {
+			this.NewError(e.reason);
+			e.preventDefault();
+			e.stopPropagation();
+		});
+	},
+	methods: {
+		NewError(error) {
 			if(error) {
 				this.errors.push(error);
 				this.toastError = error;
 			}
-		}
-	},
-	methods: {
+		},
 		ToggleErrors() {
-			if(!this.showErrors && this.toastError) {
-				if(toastTimeout) {
-					clearTimeout(toastTimeout);
-					toastTimeout = false;
-				}
-				this.toastError = false;
-			}
+			if(!this.showErrors && this.toastError)
+				this.ClearToast();
 			this.showErrors = !this.showErrors;
 		},
 		HideErrors() {
 			if(this.showErrors)
 				this.ToggleErrors();
+		},
+		ClearToast() {
+			this.toastError = null;
 		},
 		ClearErrors() {
 			this.errors.splice(0, this.errors.length);
@@ -44,11 +47,7 @@ const StatusBar = {
 		DismissToast() {
 			if(this.toastError) {
 				const error = this.toastError;
-				this.toastError = false;
-				if(toastTimeout) {
-					clearTimeout(toastTimeout);
-					toastTimeout = false;
-				}
+				this.ClearToast();
 				this.Dismiss(error);
 			}
 		},
@@ -61,19 +60,20 @@ const StatusBar = {
 	directives: {
 		toast: {
 			created(el) {
+				el.dataset.timeout = 0;
 				$(el).hide();
 			},
-			updated(el, bind, node) {
-				if(bind.value) {
-					if(toastTimeout) {
-						clearTimeout(toastTimeout);
-						toastTimeout = false;
-					}
+			updated(el, bind) {
+				if(el.dataset.timeout) {
+					clearTimeout(el.dataset.timeout);
+					el.dataset.timeout = 0;
+				}
+				if(bind.value.message) {
 					$(el).fadeIn();
-					toastTimeout = setTimeout(() => {
-						toastTimeout = false;
+					el.dataset.timeout = setTimeout(() => {
+						el.dataset.timeout = 0;
 						$(el).fadeOut(1600, () => {
-							node.context[bind.expression] = false;
+							bind.value.afterFadeOut?.();
 						});
 					}, 5000);
 				} else
@@ -84,8 +84,8 @@ const StatusBar = {
 	mixins: [ClosePopup],
 	template: /*html*/ `
 		<footer id=status-bar>
-			<div id=errorToast class=error v-toast=toastError>
-				{{toastError.message}}
+			<div id=errorToast class=error v-toast="{message: toastError, afterFadeOut: ClearToast}">
+				{{toastError?.message}}
 				<a class=close title="Dismiss this error" href=#dismissError @click.prevent=DismissToast><span>Dismiss</span></a>
 			</div>
 			<div id=errors v-if=showErrors v-close-popup=HideErrors>

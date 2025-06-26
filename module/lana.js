@@ -15,8 +15,7 @@ const lana = createApp({
 			subView: false,
 			params: false,
 			auths: false,
-			player: false,
-			error: false
+			player: false
 		}
 	},
 	watch: {
@@ -43,10 +42,10 @@ const lana = createApp({
 		$(window).on("hashchange", this.ParseHash);
 		AuthApi.List().done(result => {
 			this.auths = result;
-		}).fail(this.Error);
+		});
 		AuthApi.Player().done(result => {
 			this.player = result;
-		}).fail(this.Error);
+		});
 	},
 	methods: {
 		ParseHash() {
@@ -95,18 +94,13 @@ const lana = createApp({
 				this.subView = subView;
 				this.view = view;
 			}
-		},
-		Error(error) {
-			this.error = typeof error == "string"
-				? new Error(error)
-				: error;
 		}
 	},
 	template: /*html*/ `
 		<div id=lana>
 			<titleBar :auths=auths :player=player></titleBar>
-			<component :is=view.Name :view=subView :params=params :auths=auths :player=player @error="error = $event"></component>
-			<statusBar :last-error=error></statusBar>
+			<component :is=view.Name :view=subView :params=params :auths=auths :player=player></component>
+			<statusBar></statusBar>
 		</div>
 	`
 }).component("titleBar", TitleBar)

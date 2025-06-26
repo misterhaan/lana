@@ -82,23 +82,6 @@ p {
 	margin-left: 5px;
 }
 
-p.error {
-	display: flex;
-
-	&:before {
-		font-size: .85em;
-		color: $white;
-		background: $red;
-		flex: 0 0 auto;
-		padding: 3px;
-		border-right: 1px solid $red;
-		margin-right: 5px;
-	}
-
-	border: 1px solid $red;
-	border-radius: $gentleCorner;
-}
-
 .avatar {
 	border-radius: $gentleCorner;
 	width: 48px;

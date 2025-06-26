@@ -3,7 +3,6 @@ import AppName from "./appName.js";
 import TitleBar from "./component/titleBar.js";
 import StatusBar from "./component/statusBar.js";
 import SetupApi from "./api/setup.js";
-import ReportError from "./mixin/reportError.js";
 
 const KeyClassRegex = /class ([A-Za-z]+) \{/;
 const KeyValueRegex = /const ([A-Za-z]+) = '';/;
@@ -19,20 +18,17 @@ const SetupLevel = {
 
 const SetupStep = {
 	methods: {
-		...ReportError.methods,
-		...{
-			Recheck(minLevel, successMessage, errorMessage) {
-				this.checking = true;
-				SetupApi.Level().done(result => {
-					if(result.level >= minLevel) {
-						this.$emit("log-step", successMessage);
-						this.$emit("set-level", result);
-					} else
-						this.Error(errorMessage);
-				}).fail(this.Error).always(() => {
-					this.checking = false;
-				});
-			}
+		Recheck(minLevel, successMessage, errorMessage) {
+			this.checking = true;
+			SetupApi.Level().done(result => {
+				if(result.level >= minLevel) {
+					this.$emit("log-step", successMessage);
+					this.$emit("set-level", result);
+				} else
+					throw new Error(errorMessage);
+			}).always(() => {
+				this.checking = false;
+			});
 		}
 	}
 };
@@ -44,8 +40,7 @@ createApp({
 			level: SetupLevel.Unknown,
 			stepData: false,
 			stepsTaken: [],
-			dbInfo: false,
-			error: false
+			dbInfo: false
 		};
 	},
 	computed: {
@@ -64,8 +59,6 @@ createApp({
 		SetupApi.Level().done(result => {
 			this.level = result.level;
 			this.stepData = result.stepData;
-		}).fail(error => {
-			this.error = error;
 		});
 	},
 	template: /*html*/ `
@@ -77,9 +70,9 @@ createApp({
 				<ol class=stepsTaken v-if=stepsTaken.length v-for="step in stepsTaken">
 					<li>{{step}}</li>
 				</ol>
-				<component :is=progress.component :step-data=stepData :db-info=dbInfo @set-db-info="dbInfo = $event" @set-level="level = $event.level; stepData = $event.stepData" @log-step="stepsTaken.push($event)" @error="error = $event"></component>
+				<component :is=progress.component :step-data=stepData :db-info=dbInfo @set-db-info="dbInfo = $event" @set-level="level = $event.level; stepData = $event.stepData" @log-step="stepsTaken.push($event)"></component>
 			</main>
-			<statusBar :last-error=error></statusBar>
+			<statusBar></statusBar>
 		</div>
 `
 }).component("titleBar", TitleBar)
@@ -191,7 +184,7 @@ createApp({
 							this.$emit("set-level", result);
 						} else
 							this.manual = { path: result.path, template: result.template, reason: result.message };
-					}).fail(this.Error).always(() => {
+					}).always(() => {
 						this.saving = false;
 					});
 			}
@@ -334,12 +327,11 @@ grant all on \`{{name}}\`.* to '{{user}}'@'localhost' identified by '{{pass}}';<
 				SetupApi.InstallDatabase().done(() => {
 					this.$emit("log-step", "Installed new database");
 					this.$emit("set-level", { level: SetupLevel.DatabaseUpToDate, stepData: false });
-				}).fail(this.Error).always(() => {
+				}).always(() => {
 					this.working = false;
 				});
 			}
 		},
-		mixins: [ReportError],
 		template: /*html*/ `
 			<article>
 				<h2>Install Database</h2>
@@ -365,12 +357,11 @@ grant all on \`{{name}}\`.* to '{{user}}'@'localhost' identified by '{{pass}}';<
 				SetupApi.UpgradeDatabase().done(result => {
 					this.$emit("log-step", "Upgraded database");
 					this.$emit("set-level", { level: SetupLevel.DatabaseUpToDate, stepData: false });
-				}).fail(this.Error).always(() => {
+				}).always(() => {
 					this.working = false;
 				});
 			}
 		},
-		mixins: [ReportError],
 		template: /*html*/ `
 			<article>
 				<h2>Upgrade Database</h2>
