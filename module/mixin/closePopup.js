@@ -4,14 +4,15 @@ const ClosePopup = {
 			created(el, binding) {
 				if(!document.popupStack) {
 					document.popupStack = [];
-					$(document).keyup(e => {
+					document.addEventListener("keyup", e => {
 						if(e.key == "Escape")
 							for(let popup = document.popupStack.pop(); popup; popup = document.popupStack.pop())
 								if(document.body.contains(popup)) {
 									popup.popupHide(e);
 									return;  // leave other popups on the stack
 								}
-					}).click(e => {
+					});
+					document.addEventListener("click", e => {
 						for(let popup = document.popupStack.pop(); popup; popup = document.popupStack.pop())
 							if(document.body.contains(popup)) {
 								if(popup == e.target || popup.contains(e.target))

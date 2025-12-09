@@ -37,15 +37,11 @@ const lana = createApp({
 				document.title = AppName.Short;
 		}
 	},
-	created() {
+	async created() {
 		this.ParseHash();
-		$(window).on("hashchange", this.ParseHash);
-		AuthApi.List().done(result => {
-			this.auths = result;
-		});
-		AuthApi.Player().done(result => {
-			this.player = result;
-		});
+		window.addEventListener("hashchange", this.ParseHash);
+		this.player = await AuthApi.Player();
+		this.auths = await AuthApi.List();
 	},
 	methods: {
 		ParseHash() {

@@ -12,24 +12,21 @@ const Accounts = {
 			accounts: false
 		};
 	},
-	created() {
+	async created() {
 		this.loading = true;
-		SettingsApi.ListAccounts().done(result => {
-			this.accounts = result;
-		}).always(() => {
+		try {
+			this.accounts = await SettingsApi.ListAccounts();
+		} finally {
 			this.loading = false;
-		});
+		}
 	},
 	methods: {
-		Add(site) {
-			AuthApi.GetSignInUrl(site, location.hash).done(result => {
-				location = result;
-			});
+		async Add(site) {
+			location = await AuthApi.GetSignInUrl(site, location.hash);
 		},
-		Unlink(account) {
-			SettingsApi.UnlinkAccount(account.site, account.id).done(() => {
-				this.accounts.splice(this.accounts.indexOf(account), 1);
-			});
+		async Unlink(account) {
+			await SettingsApi.UnlinkAccount(account.site, account.id);
+			this.accounts.splice(this.accounts.indexOf(account), 1);
 		}
 	},
 	template: /*html*/ `

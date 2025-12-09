@@ -50,7 +50,8 @@ export default class AuthApi extends ApiBase {
 	 * @return {Promise} result of the authentication attempt
 	 */
 	static SignIn(siteId, queryString) {
-		return super.POST(urlbase + "signin/" + siteId, queryString);
+		const data = new URLSearchParams(queryString);
+		return super.POST(urlbase + "signin/" + siteId, data);
 	}
 
 	/**

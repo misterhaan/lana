@@ -6,6 +6,7 @@ const StatusBar = {
 		return {
 			errors: [],
 			toastError: null,
+			toastClosing: false,
 			showErrors: false
 		};
 	},
@@ -24,13 +25,20 @@ const StatusBar = {
 	methods: {
 		NewError(error) {
 			if(error) {
+				this.ClearToastTimeout();
 				this.errors.push(error);
 				this.toastError = error;
+				toastTimeout = setTimeout(() => {
+					this.toastError = null;
+				}, 5000);
 			}
 		},
 		ToggleErrors() {
-			if(!this.showErrors && this.toastError)
+			if(!this.showErrors && this.toastError) {
+				this.toastClosing = true;
+				this.ClearToastTimeout();
 				this.ClearToast();
+			}
 			this.showErrors = !this.showErrors;
 		},
 		HideErrors() {
@@ -40,14 +48,22 @@ const StatusBar = {
 		ClearToast() {
 			this.toastError = null;
 		},
+		ClearToastTimeout() {
+			if(toastTimeout) {
+				clearTimeout(toastTimeout);
+				toastTimeout = false;
+			}
+		},
 		ClearErrors() {
 			this.errors.splice(0, this.errors.length);
 			this.showErrors = false;
 		},
 		DismissToast() {
 			if(this.toastError) {
+				this.toastClosing = true;
 				const error = this.toastError;
 				this.ClearToast();
+				this.ClearToastTimeout();
 				this.Dismiss(error);
 			}
 		},
@@ -57,37 +73,15 @@ const StatusBar = {
 				this.showErrors = false;
 		}
 	},
-	directives: {
-		toast: {
-			created(el) {
-				el.dataset.timeout = 0;
-				$(el).hide();
-			},
-			updated(el, bind) {
-				if(el.dataset.timeout) {
-					clearTimeout(el.dataset.timeout);
-					el.dataset.timeout = 0;
-				}
-				if(bind.value.message) {
-					$(el).fadeIn();
-					el.dataset.timeout = setTimeout(() => {
-						el.dataset.timeout = 0;
-						$(el).fadeOut(1600, () => {
-							bind.value.afterFadeOut?.();
-						});
-					}, 5000);
-				} else
-					$(el).hide();
-			}
-		}
-	},
 	mixins: [ClosePopup],
 	template: /*html*/ `
 		<footer id=status-bar>
-			<div id=errorToast class=error v-toast="{message: toastError, afterFadeOut: ClearToast}">
-				{{toastError?.message}}
-				<a class=close title="Dismiss this error" href=#dismissError @click.prevent=DismissToast><span>Dismiss</span></a>
-			</div>
+			<Transition name=fade>
+				<div id=errorToast class=error v-if=toastError :class="{closing: toastClosing}">
+					{{toastError.message}}
+					<a class=close title="Dismiss this error" href=#dismissError @click.prevent=DismissToast><span>Dismiss</span></a>
+				</div>
+			</Transition>
 			<div id=errors v-if=showErrors v-close-popup=HideErrors>
 				<header>
 					{{errors.length }} Error{{errors.length > 1 ? "s" : ""}}

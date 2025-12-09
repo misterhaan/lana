@@ -18,17 +18,18 @@ const SetupLevel = {
 
 const SetupStep = {
 	methods: {
-		Recheck(minLevel, successMessage, errorMessage) {
+		async Recheck(minLevel, successMessage, errorMessage) {
 			this.checking = true;
-			SetupApi.Level().done(result => {
+			try {
+				const result = await SetupApi.Level();
 				if(result.level >= minLevel) {
 					this.$emit("log-step", successMessage);
 					this.$emit("set-level", result);
 				} else
 					throw new Error(errorMessage);
-			}).always(() => {
+			} finally {
 				this.checking = false;
-			});
+			}
 		}
 	}
 };
@@ -55,11 +56,10 @@ createApp({
 			}
 		}
 	},
-	created() {
-		SetupApi.Level().done(result => {
-			this.level = result.level;
-			this.stepData = result.stepData;
-		});
+	async created() {
+		const result = await SetupApi.Level();
+		this.level = result.level;
+		this.stepData = result.stepData;
 	},
 	template: /*html*/ `
 		<div id=lana>
@@ -174,19 +174,20 @@ createApp({
 			}
 		},
 		methods: {
-			Save() {
+			async Save() {
 				this.saving = true;
-				SetupApi.ConfigureConnections(this.database.host, this.database.name, this.database.user, this.database.pass,
-					this.twitch.id, this.twitch.secret, this.google.id, this.google.secret).done(result => {
-						if(result.saved) {
-							this.$emit("log-step", "Saved database connection configuration to " + result.path);
-							this.$emit("set-db-info", { name: this.name, user: this.user, pass: this.pass });
-							this.$emit("set-level", result);
-						} else
-							this.manual = { path: result.path, template: result.template, reason: result.message };
-					}).always(() => {
-						this.saving = false;
-					});
+				try {
+					const result = await SetupApi.ConfigureConnections(this.database.host, this.database.name, this.database.user, this.database.pass,
+						this.twitch.id, this.twitch.secret, this.google.id, this.google.secret);
+					if(result.saved) {
+						this.$emit("log-step", "Saved database connection configuration to " + result.path);
+						this.$emit("set-db-info", { name: this.name, user: this.user, pass: this.pass });
+						this.$emit("set-level", result);
+					} else
+						this.manual = { path: result.path, template: result.template, reason: result.message };
+				} finally {
+					this.saving = false;
+				}
 			}
 		},
 		mixins: [SetupStep],
@@ -322,14 +323,15 @@ grant all on \`{{name}}\`.* to '{{user}}'@'localhost' identified by '{{pass}}';<
 			this.Install();
 		},
 		methods: {
-			Install() {
+			async Install() {
 				this.working = true;
-				SetupApi.InstallDatabase().done(() => {
+				try {
+					await SetupApi.InstallDatabase();
 					this.$emit("log-step", "Installed new database");
 					this.$emit("set-level", { level: SetupLevel.DatabaseUpToDate, stepData: false });
-				}).always(() => {
+				} finally {
 					this.working = false;
-				});
+				}
 			}
 		},
 		template: /*html*/ `
@@ -352,14 +354,15 @@ grant all on \`{{name}}\`.* to '{{user}}'@'localhost' identified by '{{pass}}';<
 			this.Upgrade();
 		},
 		methods: {
-			Upgrade() {
+			async Upgrade() {
 				this.working = true;
-				SetupApi.UpgradeDatabase().done(result => {
+				try {
+					await SetupApi.UpgradeDatabase();
 					this.$emit("log-step", "Upgraded database");
 					this.$emit("set-level", { level: SetupLevel.DatabaseUpToDate, stepData: false });
-				}).always(() => {
+				} finally {
 					this.working = false;
-				});
+				}
 			}
 		},
 		template: /*html*/ `

@@ -41,14 +41,14 @@ const Signin = {
 		HideMenu() {
 			this.showMenu = false;
 		},
-		SignIn() {
+		async SignIn() {
 			if(!this.working && this.chosenAuth) {
 				this.working = true;
-				AuthApi.GetSignInUrl(this.chosenAuth.id, location.hash, this.remember).done(result => {
-					location = result;
-				}).always(() => {
+				try {
+					location = await AuthApi.GetSignInUrl(this.chosenAuth.id, location.hash, this.remember);
+				} finally {
 					this.working = false;
-				});
+				}
 			}
 		}
 	},

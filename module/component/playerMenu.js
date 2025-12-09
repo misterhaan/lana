@@ -15,10 +15,9 @@ const PlayerMenu = {
 		HideMenu() {
 			this.showMenu = false;
 		},
-		SignOut() {
-			AuthApi.SignOut().done(() => {
-				document.SignOut && document.SignOut();
-			});
+		async SignOut() {
+			await AuthApi.SignOut();
+			document.SignOut && document.SignOut();
 		}
 	},
 	mixins: [

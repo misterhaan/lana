@@ -60,13 +60,13 @@ createApp({
 				this.validation.username = { status: "invalid", message: "Username must be between 4 and 20 characters long" };
 			else {
 				this.validation.username = { status: "working", message: "Checking whether this username has been claimed" };
-				activeTimers.username = setTimeout(() => {
+				activeTimers.username = setTimeout(async () => {
 					delete activeTimers.username;
-					ValidateApi.Username(newUsername).done(result => {
-						this.validation.username = result;
-					}).fail(() => {
+					try {
+						this.validation.username = await ValidateApi.Username(newUsername);
+					} catch {
 						this.validation.username = { status: "invalid", message: "Error encountered validating username" };
-					});
+					}
 				}, editTimeout);
 			}
 		},
@@ -83,22 +83,23 @@ createApp({
 				this.validation.email = { status: "invalid", message: "Email address is not required, so feel free to leave it blank" };
 			else {
 				this.validation.email = { status: "working", message: "Checking for accounts with this email address" };
-				activeTimers.email = setTimeout(() => {
+				activeTimers.email = setTimeout(async () => {
 					delete activeTimers.email;
-					ValidateApi.Email(newEmail).done(result => {
-						this.validation.email = result;
-					}).fail(() => {
+					try {
+						this.validation.email = await ValidateApi.Email(newEmail);
+					} catch {
 						this.validation.email = { status: "invalid", message: "Error encountered validating email address" };
-					});
+					}
 				}, editTimeout);
 			}
 		}
 	},
-	created() {
+	async created() {
 		if(location.pathname.startsWith(pathPrefix)) {
 			this.siteId = location.pathname.substring(pathPrefix.length);
 			this.working = true;
-			AuthApi.SignIn(this.siteId, location.search.substring(1)).done(result => {
+			try {
+				const result = await AuthApi.SignIn(this.siteId, location.search.substring(1));
 				if(result.registered)
 					location.replace("." + result.returnHash);
 				else {
@@ -106,21 +107,21 @@ createApp({
 					this.avatar = result.avatar ? "account" : result.email ? "email" : "default";
 					this.regInfo = result;
 				}
-			}).always(() => {
+			} finally {
 				this.working = false;
-			});
-		} else {
+			}
+		} else
 			throw new Error("Unable to determine login site from URL.  This may indicate a website configuration error.");
-		}
 	},
 	methods: {
-		Register() {
+		async Register() {
 			this.registering = true;
-			AuthApi.Register(this.siteId, this.regInfo.username, this.regInfo.realName, this.regInfo.email, this.avatar).done(() => {
+			try {
+				await AuthApi.Register(this.siteId, this.regInfo.username, this.regInfo.realName, this.regInfo.email, this.avatar);
 				location.replace("." + this.regInfo.returnHash);
-			}).always(() => {
+			} finally {
 				this.registering = false;
-			});
+			}
 		}
 	},
 	template: /*html*/ `

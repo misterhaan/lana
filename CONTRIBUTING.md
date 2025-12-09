@@ -46,7 +46,7 @@ Project code should conform to standards to make it easier to work with.  Some a
 
 ## JavaScript
 - Use modules.  If there’s a main object or class defined in a file, make it the default module export.
-- Use Vue where possible.  JQuery should mainly be used for AJAX or in custom Vue bindings.
+- Use Vue where possible.
 - Vue components should usually be their own file for easier reusability.
 - Filenames should be the camelCase form of the default export, with the lowercase `.js` extension.
 

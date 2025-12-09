@@ -52,15 +52,17 @@ export default class ApiBase {
  * @param {string} url - URL to request
  * @param {Object.<string, any>} [data] - Data to send with the request
  */
-function ajax(method, url, data = {}) {
-	return $.ajax({
-		method: method,
-		url: url,
-		data: data,
-		dataType: "json"
-	}).fail(request => {
-		handleError(request, url);
-	});
+async function ajax(method, url, data) {
+	const init = { method: method };
+	if(data)
+		if(typeof data == "string" || data instanceof FormData || data instanceof URLSearchParams)
+			init.body = data;
+		else
+			init.body = new URLSearchParams(data);
+	const response = await fetch(url, init);
+	if(!response.ok)
+		handleError(response);
+	return await response.json();
 }
 
 function handleError(request, url) {
