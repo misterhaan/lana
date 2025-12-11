@@ -171,7 +171,6 @@ abstract class Auth {
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
 		$response = curl_exec($ch);
-		curl_close($ch);
 		return $response;
 	}
 
@@ -192,7 +191,6 @@ abstract class Auth {
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
 		$response = curl_exec($ch);
-		curl_close($ch);
 		return $response;
 	}
 }
