@@ -1,0 +1,31 @@
+ol.playerList {
+	list-style-type: none;
+	margin: 5px 15px; // each 5px less than normal because it's not collapsing margins with the li children
+
+	li {
+		display: inline-block;
+		margin: 5px;
+	}
+
+	a {
+		display: flex;
+		background-color: $darkerGrey;
+		border-radius: $gentleCorner;
+		border-left: $darkerGrey solid 6px;
+
+		&.friend {
+			border-left-color: $orange;
+		}
+	}
+
+	.avatar {
+		border-radius: 0 0;
+		height: 40px;
+		width: 40px;
+	}
+
+	div {
+		margin: 0 10px;
+		line-height: 40px;
+	}
+}

@@ -69,7 +69,7 @@ class AuthApi extends Api {
 		$db = self::RequireLatestDatabase();
 		$db->begin_transaction();  // don't make any database changes unless we can make them all
 		require_once CLASS_PATH . 'player.php';
-		$player = Player::FromRegister($db, $username, $realName);
+		$player = PlayerOne::FromRegister($db, $username, $realName);
 		$player->AddAccount($db, $auth->id, $account, $avatar == 'account');
 		if ($email)
 			$player->AddEmail($db, $email, true, $avatar == 'email');
@@ -97,7 +97,7 @@ class AuthApi extends Api {
 			$result = $auth->Authenticate();
 			$db = self::RequireLatestDatabase();
 			$currentPlayer = self::RequirePlayer($db, true);
-			$newPlayer = Player::FromAuth($db, $auth->id, $result->accountId, $result->username, $result->profileUrl, $result->avatarUrl);
+			$newPlayer = PlayerOne::FromAuth($db, $auth->id, $result->accountId, $result->username, $result->profileUrl, $result->avatarUrl);
 			if ($newPlayer) {
 				if ($currentPlayer && $newPlayer->id != $currentPlayer->id)
 					self::DatabaseError('Unable to link account because it as already linked to another player');
@@ -138,7 +138,7 @@ class AuthApi extends Api {
 	 */
 	protected static function POST_signout(): void {
 		require_once CLASS_PATH . 'player.php';
-		Player::Signout(self::RequireLatestDatabase());
+		PlayerOne::Signout(self::RequireLatestDatabase());
 		self::Success();
 	}
 }

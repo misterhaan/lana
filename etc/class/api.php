@@ -124,13 +124,13 @@ abstract class Api {
 	 * Look up the signed in player.
 	 * @param mysqli $db Database connection object
 	 * @param bool $canContinue True if the script should continue without a player
-	 * @return Player Signed-in player, or null
+	 * @return ?PlayerOne Signed-in player, or null
 	 */
-	protected static function RequirePlayer(mysqli $db, $canContinue = false): ?Player {
+	protected static function RequirePlayer(mysqli $db, $canContinue = false): ?PlayerOne {
 		require_once CLASS_PATH . 'player.php';
-		$player = Player::FromSession($db);
+		$player = PlayerOne::FromSession($db);
 		if (!$player)
-			$player = Player::FromCookie($db);
+			$player = PlayerOne::FromCookie($db);
 		if (!$canContinue && !$player)
 			self::NeedSignin();
 		return $player;
@@ -165,7 +165,7 @@ abstract class Api {
 		header('Content-Type: text/plain');
 		if ($dbObject)
 			if ($dbObject instanceof mysqli_sql_exception)
-				$message .= ":  $dbObject->getCode() $dbObject->getMessage()";
+				$message .= ':  ' . $dbObject->getCode() . ' ' . $dbObject->getMessage();
 			elseif ($dbObject->errno)
 				$message .= ":  $dbObject->errno $dbObject->error";
 			else  // errno 0 means there's no error on $dbObject so show the last error instead

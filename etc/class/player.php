@@ -1,10 +1,51 @@
 <?php
 
 /**
- * Data and operations involving the player table.  A player
+ * Data for players as shown in the list of players.  A player
  * represents a user of the LANA website.
  */
 class Player {
+	/**
+	 * Player's username, which can be shown to anyone.
+	 */
+	public string $username = 'Player 2';
+
+	/**
+	 * URL to player's avatar.
+	 */
+	public string $avatar = '';
+
+	protected function __construct(string $username, string $avatar) {
+		$this->username = $username;
+		$this->avatar = $avatar;
+	}
+
+	/**
+	 * List all registered players.
+	 * @param mysqli $db Database connection
+	 * @return self[] Registered players
+	 */
+	public static function List(mysqli $db): array {
+		try {
+			// TODO: support sorting, filtering and incremental loading
+			$select = $db->prepare('select p.username, a.avatar from player as p left join profile as a on a.id=p.avatarProfile');
+			$select->execute();
+			/** @var string $avatar */
+			$select->bind_result($username, $avatar);
+			$players = [];
+			while ($select->fetch())
+				$players[] = new self($username, $avatar);
+			return $players;
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error looking up player list', $mse);
+		}
+	}
+}
+
+/**
+ * Data and operations for the player currently signed into the website.
+ */
+class PlayerOne extends Player {
 	private const Session = 'player';
 
 	/**
@@ -13,19 +54,9 @@ class Player {
 	public int $id = 0;
 
 	/**
-	 * Player's username, which can be shown to anyone.
-	 */
-	public string $username = 'Player 2';
-
-	/**
 	 * Player's real name, which can be shown to some friends.
 	 */
 	public string $realName = '';
-
-	/**
-	 * URL to player's avatar.
-	 */
-	public string $avatar = '';
 
 	/**
 	 * Create a player object looked up from the database.
@@ -51,11 +82,11 @@ class Player {
 	/**
 	 * Look up a player from the current session.
 	 * @param mysqli $db Database connection object
-	 * @return Player The LANA player record in the session or null if none
+	 * @return ?self The LANA player record in the session or null if none
 	 */
-	public static function FromSession(mysqli $db): ?Player {
+	public static function FromSession(mysqli $db): ?self {
 		if (isset($_SESSION[self::Session]) && $id = +$_SESSION[self::Session]) {
-			$player = new Player($id, $db);
+			$player = new self($id, $db);
 			$player->UpdateLastRequest($db);
 			return $player;
 		}
@@ -65,12 +96,12 @@ class Player {
 	/**
 	 * Look up a player from an autosignin cookie.
 	 * @param mysqli $db Database connection object
-	 * @return Player The LANA player record from a verified autologin cookie or null if none
+	 * @return ?self The LANA player record from a verified autologin cookie or null if none
 	 */
-	public static function FromCookie(mysqli $db): ?Player {
+	public static function FromCookie(mysqli $db): ?self {
 		require_once 'cookie.php';
 		if ($id = Cookie::Verify($db)) {
-			$player = new Player($id, $db);
+			$player = new self($id, $db);
 			$player->UpdateLastLogin($db);
 			return $player;
 		}
@@ -85,9 +116,9 @@ class Player {
 	 * @param string $name Name of profile on external site
 	 * @param string $url URL to profile on external site
 	 * @param string $avatar URL to avatar of profile on external site
-	 * @return Player Either the LANA player record associated with the external account, or a LANA player record with ID 0 if no associated player record
+	 * @return ?self Either the LANA player record associated with the external account, or a LANA player record with ID 0 if no associated player record
 	 */
-	public static function FromAuth(mysqli $db, string $site, string $account, string $name, string $url, string $avatar): ?Player {
+	public static function FromAuth(mysqli $db, string $site, string $account, string $name, string $url, string $avatar): ?self {
 		require_once 'account.php';
 		$account = new Account($site, $account, $db);
 		if ($account->player) {
@@ -95,7 +126,7 @@ class Player {
 				require_once 'profile.php';
 				Profile::Update($db, +$account->profile, $name, $url, $avatar);
 			}
-			$player = new Player(+$account->player, $db);
+			$player = new self(+$account->player, $db);
 			$_SESSION[self::Session] = $player->id;
 			$player->UpdateLastLogin($db);
 			return $player;
@@ -108,10 +139,10 @@ class Player {
 	 * @param mysqli $db Database connection object
 	 * @param string $username Player username
 	 * @param string $realName Player real name
-	 * @return Player Newly-created Player record
+	 * @return self Newly-created Player record
 	 * @throws DatabaseException Thrown when the database cannot complete a request
 	 */
-	public static function FromRegister(mysqli $db, string $username, string $realName = ''): Player {
+	public static function FromRegister(mysqli $db, string $username, string $realName = ''): self {
 		try {
 			$insert = $db->prepare('insert into player (username, realName) values (?, ?)');
 			$insert->bind_param('ss', $username, $realName);
@@ -119,7 +150,7 @@ class Player {
 			$id = $insert->insert_id;
 			$insert->close();
 			$_SESSION[self::Session] = $id;
-			return new Player($id, $db);
+			return new self($id, $db);
 		} catch (mysqli_sql_exception $mse) {
 			throw new DatabaseException('Error registering player', $mse);
 		}

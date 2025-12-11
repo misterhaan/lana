@@ -4,6 +4,7 @@ import TitleBar from "./component/titleBar.js";
 import StatusBar from "./component/statusBar.js";
 import Views from "./views.js";
 import Home from "./component/home.js";
+import Players from "./component/players.js";
 import Settings from "./component/settings.js";
 import AuthApi from "./api/auth.js";
 
@@ -93,16 +94,15 @@ const lana = createApp({
 		}
 	},
 	template: /*html*/ `
-		<div id=lana>
-			<titleBar :auths=auths :player=player></titleBar>
-			<component :is=view.Name :view=subView :params=params :auths=auths :player=player></component>
-			<statusBar></statusBar>
-		</div>
+		<titleBar :auths=auths :player=player></titleBar>
+		<component :is=view.Name :view=subView :params=params :auths=auths :player=player></component>
+		<statusBar></statusBar>
 	`
 }).component("titleBar", TitleBar)
 	.component("statusBar", StatusBar)
 	.component(Views.Home.Name, Home)
 	.component(Views.Settings.Name, Settings)
+	.component(Views.Players.Name, Players)
 	.mount("#lana");
 
 /**

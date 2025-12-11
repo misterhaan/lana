@@ -67,8 +67,13 @@ h1 {
 	}
 }
 
-p {
+p,
+ol {
 	margin: 10px 20px;
+}
+
+ol {
+	padding: 0;
 }
 
 .fade-enter-from,
@@ -116,4 +121,5 @@ p {
 @import "!statusBar";
 @import "settings";
 @import "signIn";
+@import "player";
 @import "setup";

@@ -17,10 +17,10 @@ class ValidateApi extends Api {
 		if (!$username)
 			self::NeedMoreInfo('Username must be included in the request URL such as validate/username/{username}.');
 		require_once CLASS_PATH . 'player.php';
-		if (!Player::ValidUsername($username))
+		if (!PlayerOne::ValidUsername($username))
 			self::Invalid('Must be between 4 and 20 characters');
 		$db = self::RequireLatestDatabase();
-		$used = Player::UsernameUsedBy($db, $username);
+		$used = PlayerOne::UsernameUsedBy($db, $username);
 		if (!$used)
 			self::Valid('Username available');
 		$player = self::RequirePlayer($db, true);
