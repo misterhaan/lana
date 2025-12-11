@@ -1,6 +1,8 @@
 import AppName from "../appName.js";
 import ClosePopup from "../mixin/closePopup.js";
 
+let toastTimeout = null;
+
 const StatusBar = {
 	data() {
 		return {
@@ -51,7 +53,7 @@ const StatusBar = {
 		ClearToastTimeout() {
 			if(toastTimeout) {
 				clearTimeout(toastTimeout);
-				toastTimeout = false;
+				toastTimeout = null;
 			}
 		},
 		ClearErrors() {
