@@ -32,6 +32,7 @@ class Cookie {
 			$select = $db->prepare('select tokenHash, expires>now(), player from cookie where series=? limit 1');
 			$select->bind_param('s', $series);
 			$select->execute();
+			/** @var int $player */
 			$select->bind_result($tokenHash, $active, $player);
 			if ($select->fetch()) {
 				$select->close();
