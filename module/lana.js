@@ -4,6 +4,7 @@ import TitleBar from "./component/titleBar.js";
 import StatusBar from "./component/statusBar.js";
 import Views from "./views.js";
 import Home from "./component/home.js";
+import Player from "./component/player.js";
 import Players from "./component/players.js";
 import Settings from "./component/settings.js";
 import AuthApi from "./api/auth.js";
@@ -60,14 +61,15 @@ const lana = createApp({
 					}
 				if(view) {
 					let subView = false;
+					const subViewName = viewPieces.shift() || view.DefaultSubViewName;
 					if(view.SubViews) {
-						const subViewName = viewPieces.shift() || view.DefaultSubViewName;
 						for(const sv in view.SubViews)
 							if(view.SubViews[sv].Name == subViewName) {
 								subView = view.SubViews[sv];
 								break;
 							}
-					}
+					} else
+						subView = { Name: subViewName };
 
 					let params = false;
 					if(hash.length) {
@@ -102,6 +104,7 @@ const lana = createApp({
 	.component("statusBar", StatusBar)
 	.component(Views.Home.Name, Home)
 	.component(Views.Settings.Name, Settings)
+	.component(Views.Player.Name, Player)
 	.component(Views.Players.Name, Players)
 	.mount("#lana");
 

@@ -29,3 +29,26 @@ ol.playerList {
 		line-height: 40px;
 	}
 }
+
+header.profile {
+	display: flex;
+	margin: 10px 10px;
+
+	&:before {
+		content: none;
+	}
+
+	img.avatar {
+		height: 80px;
+		width: 80px;
+		flex: none;
+	}
+
+	h1 {
+		margin-top: 0;
+	}
+
+	p {
+		margin: 0 12px;
+	}
+}

@@ -3,6 +3,10 @@ const Views = {
 		Name: "home",
 		Title: ""
 	},
+	Player: {
+		Name: "player",
+		Title: "Player"
+	},
 	Players: {
 		Name: "players",
 		Title: "Players"

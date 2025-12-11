@@ -43,6 +43,45 @@ class Player {
 }
 
 /**
+ * Data and operations for a player with profile information.
+ */
+class PlayerProfile extends Player {
+	/**
+	 * How long the player has been registered here.
+	 */
+	public TimeTagData $joined;
+
+	private function __construct(string $username, int $joined, string $avatar) {
+		require_once 'datetime.php';
+		$this->joined = new TimeTagData('ago', $joined, FormatDate::Long);
+		parent::__construct($username, $avatar);
+	}
+
+	/**
+	 * Look up a player based on their username.
+	 * @param mysqli $db Database connection
+	 * @param string $name Username to look up
+	 * @return ?self Player information, or null if not found.
+	 */
+	public static function FromName(mysqli $db, string $name): ?self {
+		try {
+			$select = $db->prepare('select p.username, unix_timestamp(p.firstLogin), pr.avatar from player as p left join profile as pr on pr.id=p.avatarProfile where p.username=? limit 1');
+			$select->bind_param('s', $name);
+			$select->execute();
+			/** @var string $username */
+			/** @var int $joined */
+			/** @var string $avatar */
+			$select->bind_result($username, $joined, $avatar);
+			if ($select->fetch())
+				return new self($username, $joined, $avatar);
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error looking up player ' . $name, $mse);
+		}
+		return null;
+	}
+}
+
+/**
  * Data and operations for the player currently signed into the website.
  */
 class PlayerOne extends Player {

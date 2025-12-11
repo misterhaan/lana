@@ -17,7 +17,7 @@ const PlayerMenu = {
 		},
 		async SignOut() {
 			await AuthApi.SignOut();
-			document.SignOut && document.SignOut();
+			document.SignOut?.();
 		}
 	},
 	mixins: [
@@ -30,6 +30,7 @@ const PlayerMenu = {
 				{{player.username}}
 			</button>
 			<nav id=user-actions v-if=showMenu v-close-popup=HideMenu>
+				<a :href="'#player/' + player.username" class=profile title="" @click=HideMenu>Profile</a>
 				<a href=#settings class=settings title="Change your settings" @click=HideMenu>Settings</a>
 				<button class=signout title="Sign out from ${AppName.Full}" @click=SignOut>Sign out</button>
 			</nav>

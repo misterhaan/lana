@@ -83,6 +83,11 @@
 	color: $red;
 }
 
+.profile:before {
+	font-family: FontawesomeSolid;
+	content: "\f2c2";
+}
+
 .settings:before {
 	font-family: FontawesomeSolid;
 	content: "\f013";
