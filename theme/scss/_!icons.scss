@@ -67,6 +67,15 @@
 	color: $red;
 }
 
+[draggable]:before {
+	font-family: FontawesomeSolid;
+	content: "\f58d";
+}
+
+[draggable].dragging:before {
+	content: "\f0b2";
+}
+
 .minimize:before {
 	font-family: Fontawesome;
 	content: "\f2d1";
@@ -81,6 +90,36 @@
 	font-family: FontawesomeSolid;
 	content: "\f127";
 	color: $red;
+}
+
+.links:before {
+	font-family: FontawesomeSolid;
+	content: "\f35d";
+}
+
+.accounts:before {
+	font-family: FontawesomeSolid;
+	content: "\f2f6";
+}
+
+.vis-none:before {
+	font-family: Fontawesome;
+	content: "\f070";
+}
+
+.vis-friend:before {
+	font-family: Fontawesome;
+	content: "\f2b5";
+}
+
+.vis-user:before {
+	font-family: Fontawesome;
+	content: "\f007";
+}
+
+.vis-all:before {
+	font-family: FontawesomeSolid;
+	content: "\f0ac";
 }
 
 .profile:before {

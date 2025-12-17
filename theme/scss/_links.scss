@@ -1,0 +1,36 @@
+// Styles specific to the links subpage of the settings page
+
+.visibility {
+	&.droptarget {
+		outline: 3px dotted $blue;
+	}
+
+	h2:before {
+		margin-right: 10px;
+	}
+
+	ol {
+		list-style-type: none;
+
+		li[draggable] {
+			cursor: grab;
+			margin: 5px;
+			display: inline-block;
+			background-color: $darkerGrey;
+			border-radius: $gentleCorner;
+			padding: 1px 0 0 7px;
+
+			&:before {
+				margin-right: 5px;
+			}
+
+			a {
+				margin: 1px 10px;
+
+				&:before {
+					margin-right: 7px;
+				}
+			}
+		}
+	}
+}

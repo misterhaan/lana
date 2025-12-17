@@ -7,6 +7,24 @@ const urlbase = "api/settings/";
  */
 export default class SettingsApi extends ApiBase {
 	/**
+	 * Get a list of links for the current player.  Includes visibility setting.
+	 * @returns {Promise} Object with array of links
+	 */
+	static ListLinks() {
+		return super.GET(urlbase + "links");
+	}
+
+	/**
+	 * Set visibility of a link for the current player.
+	 * @param {number} id Link ID to set visibility
+	 * @param {number} visibility Visibility level to set
+	 * @returns {Promise} No data
+	 */
+	static LinkVisibility(id, visibility) {
+		return super.PATCH(urlbase + "linkVisibility/" + id, `${visibility}`);
+	}
+
+	/**
 	 * Get the list of sign-in accounts linked to the current player.
 	 * @return {Promise} Array of sign-in accounts
 	 */

@@ -137,6 +137,17 @@ abstract class Api {
 	}
 
 	/**
+	 * Read the request body as plain text.
+	 */
+	protected static function ReadRequestText(): string {
+		$fp = fopen("php://input", "r");
+		$text = '';
+		while ('' !== $data = fread($fp, 1024))
+			$text .= $data;
+		return $text;
+	}
+
+	/**
 	 * Send a successful response.
 	 * @param mixed $data Response data (optional)
 	 */

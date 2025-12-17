@@ -9,6 +9,32 @@ require_once CLASS_PATH . 'api.php';
  */
 class SettingsApi extends Api {
 	/**
+	 * Gets the list of links for the current player.
+	 */
+	protected static function GET_links(): void {
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		require_once CLASS_PATH . 'profile.php';
+		self::Success(ProfileSettings::Settings($db, $player));
+	}
+
+	/**
+	 * Sets the visibility of a link belonging to the current player.
+	 * @param array $params Must have link ID for the first element
+	 */
+	protected static function PATCH_linkVisibility($params): void {
+		$id = +array_shift($params);
+		if (!$id)
+			self::NeedMoreInfo('Link ID must be included in the request URL such as settings/linkVisibility/{linkId}');
+		require_once CLASS_PATH . 'visibility.php';
+		$visibility = Visibility::from(+self::ReadRequestText());
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		require_once CLASS_PATH . 'profile.php';
+		self::Success(ProfileSettings::UpdateVisibility($db, $player, $id, $visibility));
+	}
+
+	/**
 	 * Get the list of sign-in accounts for the current player.
 	 */
 	protected static function GET_accounts(): void {

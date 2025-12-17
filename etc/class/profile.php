@@ -108,3 +108,77 @@ class Profile {
 		}
 	}
 }
+
+/**
+ * Data and operations involving the profile table that are only available to the signed-in user.
+ */
+class ProfileSettings extends Profile {
+	public int $id;
+	public Visibility $visibility;
+
+	private function __construct(int $id, string $type, string $name, string $url, int $visibility) {
+		require_once CLASS_PATH . 'visibility.php';
+		$this->id = $id;
+		parent::__construct($type, $name, $url);
+		$this->visibility = Visibility::from($visibility);
+	}
+
+	/**
+	 * Load profile links for the signed-in player’s settings.
+	 * @param mysqli $db Database connection
+	 * @param PlayerOne $player Signed-in player
+	 */
+	public static function Settings(mysqli $db, PlayerOne $player): array {
+		$links = [];
+		try {
+			$select = $db->prepare('select p.id, p.name, p.url, p.visibility from email as e left join profile as p on p.id=e.profile where e.player=?');
+			$select->bind_param('i', $player->id);
+			$select->execute();
+			/** @var string $name */
+			/** @var string $url */
+			/** @var int $visibility */
+			$select->bind_result($id, $name, $url, $visibility);
+			while ($select->fetch())
+				$links[] = new self($id, 'email', $name, $url, $visibility);
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error looking up email profile settings', $mse);
+		}
+		try {
+			$select = $db->prepare('select p.id, a.site, p.name, p.url, p.visibility from account as a left join profile as p on p.id=a.profile where a.player=?');
+			$select->bind_param('i', $player->id);
+			$select->execute();
+			/** @var string $type */
+			/** @var string $name */
+			/** @var string $url */
+			/** @var int $visibility */
+			$select->bind_result($id, $type, $name, $url, $visibility);
+			while ($select->fetch())
+				$links[] = new self($id, $type, $name, $url, $visibility);
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error looking up account profile settings', $mse);
+		}
+		usort($links, function ($a, $b) {
+			return self::SortType[$a->type] - self::SortType[$b->type];
+		});
+		return $links;
+	}
+
+	/**
+	 * Update visibility of a profile.  Can only update profiles owned by the player.
+	 * @param mysqli $db Database connection object
+	 * @param PlayerOne $player Signed-in player
+	 * @param int $id Profile ID to update
+	 * @param Visibility $visibility Visibility to set
+	 * @throws DatabaseException Thrown when the database cannot complete a request
+	 */
+	public static function UpdateVisibility(mysqli $db, PlayerOne $player, int $id, Visibility $visibility): void {
+		try {
+			$visibility = $visibility->value;
+			$update = $db->prepare('update profile as p left join email as e on e.profile=p.id left join account as a on a.profile=p.id set p.visibility=? where p.id=? and (e.player=? or a.player=?)');
+			$update->bind_param('iiii', $visibility, $id, $player->id, $player->id);
+			$update->execute();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error updating link visibility', $mse);
+		}
+	}
+}

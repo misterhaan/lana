@@ -76,6 +76,38 @@ ol {
 	padding: 0;
 }
 
+.pages {
+	nav {
+		margin: 5px 15px;
+
+		a {
+			margin: 5px;
+			padding: 1px 5px 0;
+
+			&:before {
+				margin-right: 5px;
+			}
+
+			&.selected {
+				background-color: $orange;
+				border-radius: $gentleCorner;
+			}
+		}
+	}
+
+	@media(min-width: 600px) {
+		display: flex;
+
+		nav a {
+			display: block;
+		}
+	}
+}
+
+[draggable].dragging {
+	opacity: 50%;
+}
+
 .fade-enter-from,
 .fade-leave-to {
 	opacity: 0;

@@ -53,7 +53,11 @@ header.profile {
 	}
 }
 
-.links {
+section.links {
+	&:before {
+		content: none;
+	}
+
 	a {
 		margin: 5px 10px;
 

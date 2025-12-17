@@ -33,7 +33,7 @@ const Accounts = {
 		<article id=linkedAccounts>
 			<section>
 				<h2 :class="{working: loading}">Linked Accounts</h2>
-				<p v-if=accounts>You currently have {{accounts.length}} account{{accounts.length == 1 ? "" : "s"}} linked to ${AppName.Full}:</p>
+				<p v-if=accounts>You currently have {{accounts.length}} account{{accounts.length == 1 ? "" : "s"}} authorized to sign into ${AppName.Full}:</p>
 				<ul v-if=accounts class="cards filledIcons">
 					<li v-for="account in accounts" class=linkedAccount :class=account.site>
 						<a :href=account.url title="View the profile for this account"><img class=avatar :src=account.avatar></a>
