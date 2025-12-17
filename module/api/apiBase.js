@@ -61,20 +61,19 @@ async function ajax(method, url, data) {
 			init.body = new URLSearchParams(data);
 	const response = await fetch(url, init);
 	if(!response.ok)
-		handleError(response);
+		return await handleError(response);
 	return await response.json();
 }
 
-function handleError(request, url) {
-	if(request.status == 503 && request.statusText == "Setup Needed" && !location.href.includes("setup.html"))
+async function handleError(response) {
+	if(response.status == 503 && response.statusText == "Setup Needed" && !location.href.includes("setup.html"))
 		location = "setup.html";
-	if(request.status == 401 && document.SignOut)
+	if(response.status == 401 && document.SignOut)
 		document.SignOut();
-	throwAsync(request, url);
+	return await throwAsync(response);
 }
 
-function throwAsync(request, url) {
-	setTimeout(() => {
-		throw new Error(`${request.status} ${request.responseText || request.statusText} from ${url}`);
-	});
+async function throwAsync(response) {
+	const responseText = await response.text();
+	throw new Error(`${response.status} ${responseText || response.statusText} from ${response.url}`);
 }
