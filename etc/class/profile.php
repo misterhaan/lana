@@ -5,6 +5,47 @@
  * to help identify accounts attached to players.
  */
 class Profile {
+	protected const SortType = ['email' => 1, 'google' => 2, 'steam' => 3, 'twitch' => 4];
+
+	public string $type;
+	public string $name;
+	public string $url;
+
+	protected function __construct(string $type, string $name, string $url) {
+		$this->type = $type;
+		$this->name = $name;
+		$this->url = $url;
+	}
+
+	/**
+	 * List a player’s profiles for showing to someone else.
+	 * @param $db Database connection
+	 * @param ?PlayerOne $player Signed-in player
+	 * @param $profilePlayer ID of player whose profiles to list
+	 * @return self[] Array of player’s profiles
+	 */
+	public static function List(mysqli $db, ?PlayerOne $player, int $profilePlayer): array {
+		try {
+			$playerId = $player?->id ?? 0;
+			$select = $db->prepare('select coalesce(a.site, \'email\'), l.name, l.url from profile as l left join account as a on a.profile=l.id left join email as e on e.profile=l.id where coalesce(a.player, e.player)=? and (l.visibility=3 or l.visibility=2 and ?!=0 or l.visibility=0 and ?=?)');
+			$select->bind_param('iiii', $profilePlayer, $playerId, $profilePlayer, $playerId);
+			$select->execute();
+			/** @var string $name */
+			/** @var string $url */
+			$select->bind_result($type, $name, $url);
+			$links = [];
+			while ($select->fetch())
+				$links[] = new self($type, $name, $url);
+			$select->close();
+			usort($links, function ($a, $b) {
+				return self::SortType[$a->type] - self::SortType[$b->type];
+			});
+			return $links;
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error looking up player profiles', $mse);
+		}
+	}
+
 	/**
 	 * Add a profile.  Done after registering a new player or attaching another
 	 * sign-in account.

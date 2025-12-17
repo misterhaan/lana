@@ -22,7 +22,9 @@ class PlayerApi extends Api {
 	 */
 	protected static function GET_profile(array $params): void {
 		$playerName = trim(array_shift($params));
-		self::Success(PlayerProfile::FromName(self::RequireLatestDatabase(), $playerName));
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db, true);
+		self::Success(PlayerProfile::FromName($db, $player, $playerName));
 	}
 }
 PlayerApi::Respond();

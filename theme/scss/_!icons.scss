@@ -99,6 +99,11 @@
 	transform: rotate(180deg);
 }
 
+.email:before {
+	font-family: Fontawesome;
+	content: "\f2b6";
+}
+
 .steam:before {
 	font-family: FontawesomeBrands;
 	content: "\f3f6";

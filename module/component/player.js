@@ -41,6 +41,9 @@ const Player = {
 					<p>Joined <time :datetime=profile.joined.datetime :tooltip=profile.joined.tooltip>{{profile.joined.display}} ago</time></p>
 				</div>
 			</header>
+			<section v-if=profile?.links class=links>
+				<a v-for="link in profile.links" :href=link.url :class=link.type>{{link.name}}</a>
+			</section>
 			<p class=loading v-if=loading>Loading player profile for {{view.Name}}...</p>
 		</main>
 	`
