@@ -12,10 +12,11 @@ class Profile {
 	 * @param string $name Name of profile
 	 * @param string $url URL to profile
 	 * @param string $avatar URL to avatar for profile
+	 * @param Visibility $visibility Who can see this profile
 	 * @return int Profile ID
 	 * @throws DatabaseException Thrown when the database cannot complete a request
 	 */
-	public static function Add(mysqli $db, string $name, string $url, string $avatar): int {
+	public static function Add(mysqli $db, string $name, string $url, string $avatar, Visibility $visibility): int {
 		try {
 			$insert = $db->prepare('insert into profile (name, url, avatar) values (?, ?, ?)');
 			$insert->bind_param('sss', $name, $url, $avatar);

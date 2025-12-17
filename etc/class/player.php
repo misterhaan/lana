@@ -47,7 +47,7 @@ class Player {
  */
 class PlayerProfile extends Player {
 	/**
-	 * How long the player has been registered here.
+	 * How long the player has been registered here
 	 */
 	public TimeTagData $joined;
 
@@ -248,7 +248,9 @@ class PlayerOne extends Player {
 	public function AddAccount(mysqli $db, string $site, AuthenticationAccount $account, bool $useProfileForAvatar = false): void {
 		$db->begin_transaction();
 		require_once 'profile.php';
-		$profile = Profile::Add($db, $account->username, $account->profileUrl, $account->avatarUrl);
+		require_once 'visibility.php';
+		$visibility = str_starts_with($account->profileUrl, 'mailto:') ? Visibility::Self : Visibility::Players;
+		$profile = Profile::Add($db, $account->username, $account->profileUrl, $account->avatarUrl, $visibility);
 		require_once 'account.php';
 		Account::Save($db, $site, $account->accountId, $this->id, $profile);
 		if ($useProfileForAvatar)
@@ -266,7 +268,8 @@ class PlayerOne extends Player {
 	public function AddEmail(mysqli $db, string $email, bool $makePrimary = false, bool $useGravatarForAvatar = false): void {
 		$db->begin_transaction();
 		require_once 'profile.php';
-		$profile = Profile::Add($db, $email, 'mailto:' . $email, 'https://www.gravatar.com/avatar/' . md5(strtolower($email)) . '?s=128&amp;d=monsterid');
+		require_once 'visibility.php';
+		$profile = Profile::Add($db, $email, 'mailto:' . $email, 'https://www.gravatar.com/avatar/' . md5(strtolower($email)) . '?s=128&amp;d=monsterid', Visibility::Self);
 		require_once 'email.php';
 		Email::Add($db, $email, $this->id, $profile, $makePrimary);
 		if ($useGravatarForAvatar)
