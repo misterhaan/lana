@@ -250,7 +250,7 @@ class PlayerOne extends Player {
 
 	/**
 	 * Add an external account linked to this player.
-	 * @param mysqli $db Dataabase connection object
+	 * @param mysqli $db Database connection object
 	 * @param string $site ID of external authentication site
 	 * @param AuthenticationAccount $account External account details
 	 * @param bool $useProfileForAvatar True if the profile created here should be used for the player's avatar
@@ -270,7 +270,7 @@ class PlayerOne extends Player {
 
 	/**
 	 * Add an email address linked to this player.
-	 * @param mysqli $db Dataabase connection object
+	 * @param mysqli $db Database connection object
 	 * @param string $email Email address to add
 	 * @param bool $makePrimary True if this email address should be used for emails from LANA
 	 * @param bool $useGravatarForAvatar True if the profile created here should be used for the player's avatar
@@ -289,7 +289,7 @@ class PlayerOne extends Player {
 
 	/**
 	 * Use a profile as the player's avatar.  The profile should have an avatar defined.
-	 * @param mysqli $db Dataabase connection object
+	 * @param mysqli $db Database connection object
 	 * @param int $profileId ID of profile to use as player avatar
 	 * @throws DatabaseException Thrown when the database cannot complete a request
 	 */
