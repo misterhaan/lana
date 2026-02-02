@@ -99,7 +99,7 @@ class KeysGoogle {
 }';
 		if ($fh = fopen($path, 'w')) {
 			fwrite($fh, $contents);
-			self::Success(array_merge(self::currentLevel(), ['path' => $path, 'saved' => true]));
+			self::Success(array_merge(get_object_vars(self::currentLevel()), ['path' => $path, 'saved' => true]));
 		} else
 			self::Success(['path' => $path, 'saved' => false, 'message' => error_get_last()['message'], 'template' => self::GetKeysTemplate()]);
 	}
