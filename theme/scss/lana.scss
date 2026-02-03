@@ -3,6 +3,7 @@
 @import "!base";
 
 html {
+	color-scheme: dark;
 	background-color: $purpleGrey;
 	color: $lightMediumGrey;
 
@@ -29,6 +30,12 @@ main {
 
 	@media(min-width: 600px) {
 		border-radius: $mediumCorner;
+	}
+
+	.scrolled & {
+		@media(min-width: 600px) {
+			border-radius: 0 0 $mediumCorner $mediumCorner;
+		}
 	}
 }
 

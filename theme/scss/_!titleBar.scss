@@ -23,6 +23,12 @@ body {
 		width: calc(100% - 40px);
 	}
 
+	.scrolled & {
+		@media(min-width: 600px) {
+			border-radius: 0;
+		}
+	}
+
 	@media(min-width: 1030px) {
 		width: 990px;
 	}

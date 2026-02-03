@@ -7,6 +7,11 @@ const TitleBar = {
 		"player",
 		"auths"
 	],
+	mounted() {
+		window.addEventListener('scroll', () => {
+			document.body.classList.toggle("scrolled", window.scrollY >= 24);
+		});
+	},
 	components: {
 		signin: Signin,
 		playerMenu: PlayerMenu
