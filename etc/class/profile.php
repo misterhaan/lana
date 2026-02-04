@@ -58,9 +58,10 @@ class Profile {
 	 * @throws DatabaseException Thrown when the database cannot complete a request
 	 */
 	public static function Add(mysqli $db, string $name, string $url, string $avatar, Visibility $visibility): int {
+		$visibility = $visibility->value;
 		try {
-			$insert = $db->prepare('insert into profile (name, url, avatar) values (?, ?, ?)');
-			$insert->bind_param('sss', $name, $url, $avatar);
+			$insert = $db->prepare('insert into profile (name, url, avatar, visibility) values (?, ?, ?, ?)');
+			$insert->bind_param('sssi', $name, $url, $avatar, $visibility);
 			$insert->execute();
 			$id = $insert->insert_id;
 			$insert->close();
