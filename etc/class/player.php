@@ -151,6 +151,7 @@ class PlayerOne extends Player {
 		require_once 'cookie.php';
 		if ($id = Cookie::Verify($db)) {
 			$player = new self($id, $db);
+			$_SESSION[self::Session] = $player->id;
 			$player->UpdateLastLogin($db);
 			return $player;
 		}
