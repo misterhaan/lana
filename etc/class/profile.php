@@ -5,7 +5,7 @@
  * to help identify accounts attached to players.
  */
 class Profile {
-	protected const SortType = ['email' => 1, 'google' => 2, 'steam' => 3, 'twitch' => 4];
+	protected const SortType = ['email' => 1, 'google' => 2, 'steam' => 3, 'twitch' => 4, 'web' => 5];
 
 	public string $type;
 	public string $name;
@@ -27,7 +27,7 @@ class Profile {
 	public static function List(mysqli $db, ?PlayerOne $player, int $profilePlayer): array {
 		try {
 			$playerId = $player?->id ?? 0;
-			$select = $db->prepare('select coalesce(a.site, \'email\'), l.name, l.url from profile as l left join account as a on a.profile=l.id left join email as e on e.profile=l.id where coalesce(a.player, e.player)=? and (l.visibility=3 or l.visibility=2 and ?!=0 or l.visibility=0 and ?=?)');
+			$select = $db->prepare('select type, name, url from profile_link where player=? and (visibility=3 or visibility=2 and ?!=0 or visibility=0 and ?=?)');
 			$select->bind_param('iiii', $profilePlayer, $playerId, $profilePlayer, $playerId);
 			$select->execute();
 			/** @var string $name */
@@ -52,12 +52,12 @@ class Profile {
 	 * @param mysqli $db Database connection object
 	 * @param string $name Name of profile
 	 * @param string $url URL to profile
-	 * @param string $avatar URL to avatar for profile
+	 * @param ?string $avatar URL to avatar for profile
 	 * @param Visibility $visibility Who can see this profile
 	 * @return int Profile ID
 	 * @throws DatabaseException Thrown when the database cannot complete a request
 	 */
-	public static function Add(mysqli $db, string $name, string $url, string $avatar, Visibility $visibility): int {
+	public static function Add(mysqli $db, string $name, string $url, ?string $avatar, Visibility $visibility): int {
 		$visibility = $visibility->value;
 		try {
 			$insert = $db->prepare('insert into profile (name, url, avatar, visibility) values (?, ?, ?, ?)');
@@ -116,12 +116,14 @@ class Profile {
 class ProfileSettings extends Profile {
 	public int $id;
 	public Visibility $visibility;
+	public bool $canDelete = false;
 
 	private function __construct(int $id, string $type, string $name, string $url, int $visibility) {
 		require_once CLASS_PATH . 'visibility.php';
 		$this->id = $id;
 		parent::__construct($type, $name, $url);
 		$this->visibility = Visibility::from($visibility);
+		$this->canDelete = $type == 'web';
 	}
 
 	/**
@@ -130,22 +132,8 @@ class ProfileSettings extends Profile {
 	 * @param PlayerOne $player Signed-in player
 	 */
 	public static function Settings(mysqli $db, PlayerOne $player): array {
-		$links = [];
 		try {
-			$select = $db->prepare('select p.id, p.name, p.url, p.visibility from email as e left join profile as p on p.id=e.profile where e.player=?');
-			$select->bind_param('i', $player->id);
-			$select->execute();
-			/** @var string $name */
-			/** @var string $url */
-			/** @var int $visibility */
-			$select->bind_result($id, $name, $url, $visibility);
-			while ($select->fetch())
-				$links[] = new self($id, 'email', $name, $url, $visibility);
-		} catch (mysqli_sql_exception $mse) {
-			throw new DatabaseException('Error looking up email profile settings', $mse);
-		}
-		try {
-			$select = $db->prepare('select p.id, a.site, p.name, p.url, p.visibility from account as a left join profile as p on p.id=a.profile where a.player=?');
+			$select = $db->prepare('select id, type, name, url, visibility from profile_link where player=? order by type');
 			$select->bind_param('i', $player->id);
 			$select->execute();
 			/** @var string $type */
@@ -153,15 +141,13 @@ class ProfileSettings extends Profile {
 			/** @var string $url */
 			/** @var int $visibility */
 			$select->bind_result($id, $type, $name, $url, $visibility);
+			$links = [];
 			while ($select->fetch())
 				$links[] = new self($id, $type, $name, $url, $visibility);
+			return $links;
 		} catch (mysqli_sql_exception $mse) {
-			throw new DatabaseException('Error looking up account profile settings', $mse);
+			throw new DatabaseException('Error looking up link settings', $mse);
 		}
-		usort($links, function ($a, $b) {
-			return self::SortType[$a->type] - self::SortType[$b->type];
-		});
-		return $links;
 	}
 
 	/**
@@ -175,11 +161,117 @@ class ProfileSettings extends Profile {
 	public static function UpdateVisibility(mysqli $db, PlayerOne $player, int $id, Visibility $visibility): void {
 		try {
 			$visibility = $visibility->value;
-			$update = $db->prepare('update profile as p left join email as e on e.profile=p.id left join account as a on a.profile=p.id set p.visibility=? where p.id=? and (e.player=? or a.player=?)');
-			$update->bind_param('iiii', $visibility, $id, $player->id, $player->id);
+			$update = $db->prepare('update profile as p left join profile_link as pl on pl.id=p.id set p.visibility=? where p.id=? and (pl.player=?)');
+			$update->bind_param('iii', $visibility, $id, $player->id);
 			$update->execute();
 		} catch (mysqli_sql_exception $mse) {
 			throw new DatabaseException('Error updating link visibility', $mse);
 		}
+	}
+
+	/**
+	 * Validate a profile URL.
+	 * @param mysqli $db Database connection object
+	 * @param PlayerOne $player Signed-in player
+	 * @param string $url URL to validate
+	 * @return string Reason the URL is invalid; empty string if valid
+	 */
+	public static function ValidateUrl(mysqli $db, PlayerOne $player, string $url): string {
+		if (!filter_var($url, FILTER_VALIDATE_URL))
+			return 'Invalid URL format';
+		$parsed = parse_url($url);
+		if (!isset($parsed['scheme']) || !in_array($parsed['scheme'], ['http', 'https']))
+			return 'URL must use http or https';
+		try {
+			$select = $db->prepare('select name, type from profile_link where url=? and player=? limit 1');
+			$select->bind_param('si', $url, $player->id);
+			$select->execute();
+			$select->bind_result($name, $type);
+			if ($select->fetch())
+				return "Your profile already has this URL as $name ($type)";
+			$select->close();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error checking for duplicate link URL', $mse);
+		}
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_NOBODY, true);
+		curl_exec($curl);
+		$error = curl_error($curl);
+		if ($error)
+			return $error;
+		$status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		if ($status >= 400)
+			return "URL returned HTTP $status";
+		return '';
+	}
+
+	/**
+	 * Add a new link to the current player’s profile.
+	 * @param mysqli $db Database connection object
+	 * @param PlayerOne $player Signed-in player
+	 * @param string $url URL to add
+	 * @return self Newly added profile link
+	 */
+	public static function AddLink(mysqli $db, PlayerOne $player, string $url): self {
+		$name = self::NameFromUrl($url);
+		require_once CLASS_PATH . 'visibility.php';
+		$visibility = Visibility::Players;
+		try {
+			$db->begin_transaction();
+
+			$id = self::Add($db, $name, $url, null, $visibility);
+
+			$insert = $db->prepare('insert into player_profile (player, profile) values (?, ?)');
+			$insert->bind_param('ii', $player->id, $id);
+			$insert->execute();
+			$insert->close();
+
+			$db->commit();
+			return new self($id, 'web', $name, $url, $visibility->value, true);
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error adding profile link', $mse);
+		}
+	}
+
+	/**
+	 * Remove a link from the current player’s profile.
+	 * @param mysqli $db Database connection object
+	 * @param PlayerOne $player Signed-in player
+	 * @param int $id Profile ID to remove, which must be owned by the player and not used for sign-in or email
+	 */
+	public static function RemoveLink(mysqli $db, PlayerOne $player, int $id): void {
+		try {
+			$db->begin_transaction();
+
+			$delete = $db->prepare('delete from player_profile where player=? and profile=? limit 1');
+			$delete->bind_param('ii', $player->id, $id);
+			$delete->execute();
+			if ($delete->affected_rows == 0) {
+				$delete->close();
+				throw new DatabaseException('Link not found in your profile or is used for sign-in or email');
+			}
+			$delete->close();
+
+			Profile::Delete($db, $id);
+
+			$db->commit();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error removing profile link', $mse);
+		}
+	}
+
+	/**
+	 * Get a profile name from its URL.
+	 * @param string $url URL of profile
+	 * @return string Name derived from URL
+	 */
+	private static function NameFromUrl(string $url): string {
+		$parsed = parse_url($url);
+		if (isset($parsed['path']) && $parsed['path'] != '/')
+			return array_pop(explode('/', trim($parsed['path'], '/')));
+		$name = $parsed['host'];
+		if (str_starts_with($name, 'www.'))
+			return substr($name, 4);
+		return $name;
 	}
 }

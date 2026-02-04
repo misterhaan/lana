@@ -35,6 +35,37 @@ class SettingsApi extends Api {
 	}
 
 	/**
+	 * Adds a new link to the current player’s profile.  The link URL must be included in the request body.
+	 */
+	protected static function POST_addLink(): void {
+		$url = trim(self::ReadRequestText());
+		if (!$url)
+			self::NeedMoreInfo('Link URL must be included in the request body.');
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		require_once CLASS_PATH . 'profile.php';
+		$error = ProfileSettings::ValidateUrl($db, $player, $url);
+		if ($error)
+			self::DatabaseError($error);
+		self::Success(ProfileSettings::AddLink($db, $player, $url));
+	}
+
+	/**
+	 * Removes a link from the current player’s profile.
+	 * @param array $params Must have link ID for the first element, pointing to a link owned by the player and not used for sign-in or email.
+	 */
+	protected static function DELETE_link($params): void {
+		$id = +array_shift($params);
+		if (!$id)
+			self::NeedMoreInfo('Link ID must be included in the request URL such as settings/link/{linkId}');
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		require_once CLASS_PATH . 'profile.php';
+		ProfileSettings::RemoveLink($db, $player, $id);
+		self::Success();
+	}
+
+	/**
 	 * Get the list of sign-in accounts for the current player.
 	 */
 	protected static function GET_accounts(): void {

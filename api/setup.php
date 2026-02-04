@@ -115,9 +115,11 @@ class KeysGoogle {
 			'table/config',
 			'table/profile',
 			'table/player',
+			'table/player_profile',
 			'table/account',
 			'table/cookie',
-			'table/email'
+			'table/email',
+			'view/profile_link'
 		];
 		$db->begin_transaction();  // no partial database installations
 		foreach ($files as $file)

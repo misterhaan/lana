@@ -23,4 +23,13 @@ export default class ValidateApi extends ApiBase {
 	static Email(address) {
 		return super.GET(urlBase + "email/" + address);
 	}
+
+	/**
+	 * Validate a link URL the player intends to add to their profile.
+	 * @param {string} url URL of link to add
+	 * @returns {Promise} Validation result
+	 */
+	static AddLink(url) {
+		return super.POST(urlBase + "addLink", url);
+	}
 }

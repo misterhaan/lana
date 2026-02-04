@@ -52,6 +52,22 @@ class ValidateApi extends Api {
 	}
 
 	/**
+	 * Validate a link URL the player intends to add to their profile.  Provide the URL as the request body.
+	 */
+	protected static function POST_addLink(): void {
+		$url = trim(self::ReadRequestText());
+		if (!$url)
+			self::NeedMoreInfo('Link URL must be included in the request body.');
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		require_once CLASS_PATH . 'profile.php';
+		$error = ProfileSettings::ValidateUrl($db, $player, $url);
+		if ($error)
+			self::Invalid($error);
+		self::Valid('Link URL is valid and not already on your profile');
+	}
+
+	/**
 	 * Report a valid result message.  Ends script execution.
 	 * @param string $message Validation message to report
 	 */

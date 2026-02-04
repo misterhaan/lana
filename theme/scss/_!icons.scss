@@ -86,6 +86,17 @@
 	content: "\f00d";
 }
 
+.add:before {
+	font-family: FontawesomeSolid;
+	content: "\f067";
+}
+
+.delete:before {
+	font-family: FontawesomeSolid;
+	content: "\f00d";
+	color: $red;
+}
+
 .unlink:before {
 	font-family: FontawesomeSolid;
 	content: "\f127";
@@ -119,7 +130,7 @@
 
 .vis-all:before {
 	font-family: FontawesomeSolid;
-	content: "\f0ac";
+	content: "\f57d";
 }
 
 .profile:before {
@@ -171,4 +182,9 @@
 		color: #fff;
 		background-color: #4285f4;
 	}
+}
+
+.web:before {
+	font-family: FontawesomeSolid;
+	content: "\f0ac";
 }

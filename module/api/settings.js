@@ -25,6 +25,24 @@ export default class SettingsApi extends ApiBase {
 	}
 
 	/**
+	 * Add a link to the current player’s profile.
+	 * @param {string} url URL of link to add
+	 * @returns {Promise} Added link object
+	 */
+	static AddLink(url) {
+		return super.POST(urlBase + "addLink", url);
+	}
+
+	/**
+	 * Remove a link from the current player's profile.
+	 * @param {number} id ID of link to remove
+	 * @returns {Promise} No data
+	 */
+	static RemoveLink(id) {
+		return super.DELETE(urlBase + "link/" + id);
+	}
+
+	/**
 	 * Get the list of sign-in accounts linked to the current player.
 	 * @return {Promise} Array of sign-in accounts
 	 */

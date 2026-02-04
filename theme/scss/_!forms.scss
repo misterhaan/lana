@@ -1,4 +1,7 @@
 // form styles for LAN Ahead
+form {
+	margin: 10px 20px;
+}
 
 input,
 button,
@@ -13,33 +16,19 @@ input:not([type]),
 input[type=text],
 input[type=password],
 input[type=number],
-input[type=email] {
+input[type=email],
+input[type=url] {
 	padding: 3px 5px;
 	height: 20px;
 	border: none;
 	border-bottom: 1px solid $mediumGrey;
-	background: transparent;
+	background: inherit;
 	color: inherit;
 	border-radius: 0;
 
 	&:focus {
 		border-bottom: 3px solid $orange;
 		padding-bottom: 1px;
-		outline: none;
-	}
-}
-
-select {
-	padding: 1px 5px 5px; // needs to be 2px higher than the inputs
-	height: 27px; // this actually works out to 20?  maybe it includes padding and border
-	border: none;
-	border-bottom: 1px solid $mediumGrey;
-	border-radius: 0;
-	background: transparent;
-
-	&:focus {
-		border-bottom: 3px solid $purple;
-		padding-bottom: 3px;
 		outline: none;
 	}
 }
