@@ -1,6 +1,6 @@
 import ApiBase from "./apiBase.js";
 
-const urlbase = "api/settings/";
+const urlBase = "api/settings/";
 
 /**
  * Javascript client for the settings API

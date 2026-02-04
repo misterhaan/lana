@@ -14,7 +14,7 @@ class Cookie {
 	}
 
 	/**
-	 * Look up the player for an autosignin cookie.  Removes cookie if invalid or
+	 * Look up the player for an auto-signin cookie.  Removes cookie if invalid or
 	 * expired.
 	 * @param mysqli $db Database connection object
 	 * @return ?int Player ID from verified token, or null if unable to verify
@@ -51,8 +51,8 @@ class Cookie {
 	}
 
 	/**
-	 * Forget an autosignin series from both the browser and the database when
-	 * the user has signed out.  Called even if there is no autosignin series.
+	 * Forget an auto-signin series from both the browser and the database when
+	 * the user has signed out.  Called even if there is no auto-signin series.
 	 * @param mysqli $db Database connection object
 	 */
 	public static function Forget(mysqli $db): void {
