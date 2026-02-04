@@ -1,6 +1,6 @@
 import ApiBase from "./apiBase.js";
 
-const urlbase = "api/player/";
+const urlBase = "api/player/";
 
 /**
  * Javascript client for the player API
@@ -11,7 +11,7 @@ export default class PlayerApi extends ApiBase {
 	 * @return {Promise} Array of registered players
 	 */
 	static List() {
-		return super.GET(`${urlbase}list`);
+		return super.GET(`${urlBase}list`);
 	}
 
 	/**
@@ -20,6 +20,6 @@ export default class PlayerApi extends ApiBase {
 	 * @return {Promise} Player profile object
 	 */
 	static Profile(name) {
-		return super.GET(`${urlbase}profile/${name}`);
+		return super.GET(`${urlBase}profile/${name}`);
 	}
 }

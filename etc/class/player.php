@@ -143,9 +143,9 @@ class PlayerOne extends Player {
 	}
 
 	/**
-	 * Look up a player from an autosignin cookie.
+	 * Look up a player from an auto-signin cookie.
 	 * @param mysqli $db Database connection object
-	 * @return ?self The LANA player record from a verified autologin cookie or null if none
+	 * @return ?self The LANA player record from a verified auto-signin cookie or null if none
 	 */
 	public static function FromCookie(mysqli $db): ?self {
 		require_once 'cookie.php';

@@ -11,7 +11,7 @@ export default class SettingsApi extends ApiBase {
 	 * @returns {Promise} Object with array of links
 	 */
 	static ListLinks() {
-		return super.GET(urlbase + "links");
+		return super.GET(urlBase + "links");
 	}
 
 	/**
@@ -21,7 +21,7 @@ export default class SettingsApi extends ApiBase {
 	 * @returns {Promise} No data
 	 */
 	static LinkVisibility(id, visibility) {
-		return super.PATCH(urlbase + "linkVisibility/" + id, `${visibility}`);
+		return super.PATCH(urlBase + "linkVisibility/" + id, `${visibility}`);
 	}
 
 	/**
@@ -29,7 +29,7 @@ export default class SettingsApi extends ApiBase {
 	 * @return {Promise} Array of sign-in accounts
 	 */
 	static ListAccounts() {
-		return super.GET(urlbase + "accounts");
+		return super.GET(urlBase + "accounts");
 	}
 
 	/**
@@ -39,6 +39,6 @@ export default class SettingsApi extends ApiBase {
 	 * @return {Promise} No data
 	 */
 	static UnlinkAccount(site, id) {
-		return super.DELETE(`${urlbase}account/${site}/${id}`);
+		return super.DELETE(`${urlBase}account/${site}/${id}`);
 	}
 }

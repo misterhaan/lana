@@ -1,6 +1,6 @@
 import ApiBase from "./apiBase.js";
 
-const urlbase = "api/setup/";
+const urlBase = "api/setup/";
 
 /**
  * Javascript client for the setup API
@@ -11,7 +11,7 @@ export default class SetupApi extends ApiBase {
 	 * @return {Promise} The current setup level along with data for taking the next step
 	 */
 	static Level() {
-		return super.GET(urlbase + "level");
+		return super.GET(urlBase + "level");
 	}
 
 	/**
@@ -26,7 +26,7 @@ export default class SetupApi extends ApiBase {
 	 * @param {string} googleSecret - Client secret for Google API
 	 */
 	static ConfigureConnections(host, name, user, pass, twitchId, twitchSecret, googleId, googleSecret) {
-		return super.POST(urlbase + "configureConnections", {
+		return super.POST(urlBase + "configureConnections", {
 			host: host,
 			name: name,
 			user: user,
@@ -42,13 +42,13 @@ export default class SetupApi extends ApiBase {
 	 * Install a new database.
 	 */
 	static InstallDatabase() {
-		return super.POST(urlbase + "installDatabase");
+		return super.POST(urlBase + "installDatabase");
 	}
 
 	/**
 	 * Upgrade the database after an update that requires it.
 	 */
 	static UpgradeDatabase() {
-		return super.POST(urlbase + "upgradeDatabase");
+		return super.POST(urlBase + "upgradeDatabase");
 	}
 }

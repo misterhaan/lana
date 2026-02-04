@@ -49,6 +49,8 @@ Project code should conform to standards to make it easier to work with.  Some a
 - Use Vue where possible.
 - Vue components should usually be their own file for easier reusability.
 - Filenames should be the camelCase form of the default export, with the lowercase `.js` extension.
+- Variable and property names should use camelCase.
+- Function and Class names should use PascalCase.
 
 ## Sass / SCSS / CSS
 - Everything gets included in `lana.scss` so that one CSS file is generated.

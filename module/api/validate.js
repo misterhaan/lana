@@ -1,6 +1,6 @@
 import ApiBase from "./apiBase.js";
 
-const urlbase = "api/validate/";
+const urlBase = "api/validate/";
 
 /**
  * Javascript client for the validate API
@@ -12,7 +12,7 @@ export default class ValidateApi extends ApiBase {
 	 * @return {Promise} Validation result
 	 */
 	static Username(username) {
-		return super.GET(urlbase + "username/" + username);
+		return super.GET(urlBase + "username/" + username);
 	}
 
 	/**
@@ -21,6 +21,6 @@ export default class ValidateApi extends ApiBase {
 	 * @return {Promise} Validation result
 	 */
 	static Email(address) {
-		return super.GET(urlbase + "email/" + address);
+		return super.GET(urlBase + "email/" + address);
 	}
 }

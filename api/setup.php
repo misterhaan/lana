@@ -13,12 +13,12 @@ class SetupApi extends Api {
 	 */
 	public static function currentLevel(): object {
 		require_once CLASS_PATH . 'url.php';
-		$docroot = Url::DocRoot();
+		$docRoot = Url::DocRoot();
 		$result = (object)['level' => -4];
-		if (!file_exists(dirname($docroot) . '/.lanaKeys.php'))
+		if (!file_exists(dirname($docRoot) . '/.lanaKeys.php'))
 			$result->stepData = "File not found";
 		else {
-			require_once(dirname($docroot) . '/.lanaKeys.php');
+			require_once(dirname($docRoot) . '/.lanaKeys.php');
 			if (!class_exists('KeysDB') || !class_exists('KeysTwitch') || !class_exists('KeysGoogle'))
 				$result->stepData = "Class not defined";
 			elseif (

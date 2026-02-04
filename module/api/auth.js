@@ -1,6 +1,6 @@
 import ApiBase from "./apiBase.js";
 
-const urlbase = "api/auth/";
+const urlBase = "api/auth/";
 
 /**
  * Javascript client for the auth API
@@ -11,7 +11,7 @@ export default class AuthApi extends ApiBase {
 	 * @return {Promise} Array of authentication site names
 	 */
 	static List() {
-		return super.GET(urlbase + "list");
+		return super.GET(urlBase + "list");
 	}
 
 	/**
@@ -19,7 +19,7 @@ export default class AuthApi extends ApiBase {
 	 * @return {Promise} Object for currently signed-in player, or
 	 */
 	static Player() {
-		return super.GET(urlbase + "player");
+		return super.GET(urlBase + "player");
 	}
 
 	/**
@@ -30,7 +30,7 @@ export default class AuthApi extends ApiBase {
 	 * @return {Promise} External sign-in URL
 	 **/
 	static GetSignInUrl(siteId, returnHash, remember) {
-		let url = urlbase + "url/" + siteId;
+		let url = urlBase + "url/" + siteId;
 		// handle boolean parameter manually so it doesn't go through as =true or =false
 		if(returnHash && returnHash != "#") {
 			url += "?returnHash=" + encodeURIComponent(returnHash);
@@ -51,7 +51,7 @@ export default class AuthApi extends ApiBase {
 	 */
 	static SignIn(siteId, queryString) {
 		const data = new URLSearchParams(queryString);
-		return super.POST(urlbase + "signin/" + siteId, data);
+		return super.POST(urlBase + "signin/" + siteId, data);
 	}
 
 	/**
@@ -63,7 +63,7 @@ export default class AuthApi extends ApiBase {
 	 * @param {string} Player avatar source (account, gravatar, or default)
 	 */
 	static Register(siteId, username, realName, email, avatar) {
-		return super.POST(urlbase + "register/" + siteId, {
+		return super.POST(urlBase + "register/" + siteId, {
 			username: username,
 			realName: realName,
 			email: email,
@@ -75,6 +75,6 @@ export default class AuthApi extends ApiBase {
 	 * Sign out the current player.
 	 */
 	static SignOut() {
-		return super.POST(urlbase + "signout");
+		return super.POST(urlBase + "signout");
 	}
 }
