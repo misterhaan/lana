@@ -16,10 +16,10 @@ class GoogleAuth extends Auth {
 	 * @return string URL for signing in via Google
 	 */
 	public function GetUrl(bool $remember, string $returnHash): string {
-
 		$state = $remember ? 'remember' : '';
 		if ($returnHash)
-			$state .= ($state ? '&' : '') . 'returnHash=' . urlencode($returnHash) . '&nonce=' . $this->GenerateNonce();
+			$state .= ($state ? '&' : '') . 'returnHash=' . urlencode($returnHash);
+		$state .= ($state ? '&' : '') . 'nonce=' . $this->GenerateNonce();
 		$data = [
 			'client_id' => KeysGoogle::ClientId,
 			'redirect_uri' => $this->GetRedirectUrl(),
