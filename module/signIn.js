@@ -114,6 +114,9 @@ createApp({
 			throw new Error("Unable to determine login site from URL.  This may indicate a website configuration error.");
 	},
 	methods: {
+		SanitizeUsername() {
+			this.regInfo.username = this.regInfo.username.replace(/[\/#?\s]/g, '');
+		},
 		async Register() {
 			this.registering = true;
 			try {
@@ -146,7 +149,7 @@ createApp({
 					<section class=single-line-fields id=new-user>
 						<label title="Your username will identify you on LAN Ahead and is required">
 							<span class=label>Username:</span>
-							<input v-model.trim=regInfo.username required minlength=4 maxlength=20>
+							<input v-model.trim=regInfo.username required minlength=4 maxlength=20 pattern="[^\/#?\s]+" @input=SanitizeUsername>
 							<span class=validation :class=validation.username.status :title=validation.username.message></span>
 						</label>
 						<label title="Your real name will only be displayed to your friends you mark as able to see your real name">

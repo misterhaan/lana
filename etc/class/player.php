@@ -224,7 +224,7 @@ class PlayerOne extends Player {
 	 */
 	public static function ValidUsername(string $username): bool {
 		$len = strlen($username);
-		return $len >= 4 && $len <= 20;
+		return $len >= 4 && $len <= 20 && !preg_match('/[\/#?\s]/', $username);
 	}
 
 	/**

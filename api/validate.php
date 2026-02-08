@@ -9,16 +9,15 @@ require_once CLASS_PATH . 'api.php';
  */
 class ValidateApi extends Api {
 	/**
-	 * Validate a username.
-	 * @param array $params The first parameter must be the username to validate
+	 * Validate a username.  Provide the username as the request body.
 	 */
-	protected static function GET_username(array $params): void {
-		$username = trim(array_shift($params));
+	protected static function POST_username(): void {
+		$username = trim(self::ReadRequestText());
 		if (!$username)
-			self::NeedMoreInfo('Username must be included in the request URL such as validate/username/{username}.');
+			self::NeedMoreInfo('Username must be included in the request body.');
 		require_once CLASS_PATH . 'player.php';
 		if (!PlayerOne::ValidUsername($username))
-			self::Invalid('Must be between 4 and 20 characters');
+			self::Invalid('Must be between 4 and 20 characters and cannot include / # ? or spaces');
 		$db = self::RequireLatestDatabase();
 		$used = PlayerOne::UsernameUsedBy($db, $username);
 		if (!$used)
@@ -30,13 +29,12 @@ class ValidateApi extends Api {
 			self::Invalid('Username already in use');
 	}
 	/**
-	 * Validate an email address.
-	 * @param array $params The first parameter must be the email address to validate
+	 * Validate an email address.  Provide the email address as the request body.
 	 */
-	protected static function GET_email(array $params): void {
-		$address = trim(array_shift($params));
+	protected static function POST_email(): void {
+		$address = trim(self::ReadRequestText());
 		if (!$address)
-			self::NeedMoreInfo('Email address must be included in the request URL such as validate/email/{emailAddress}.');
+			self::NeedMoreInfo('Email address must be included in the request body.');
 		require_once CLASS_PATH . 'email.php';
 		if (!Email::Valid($address))
 			self::Invalid('Does not look like an email address');

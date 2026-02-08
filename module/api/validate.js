@@ -12,7 +12,7 @@ export default class ValidateApi extends ApiBase {
 	 * @return {Promise} Validation result
 	 */
 	static Username(username) {
-		return super.GET(urlBase + "username/" + username);
+		return super.POST(urlBase + "username", username);
 	}
 
 	/**
@@ -21,7 +21,7 @@ export default class ValidateApi extends ApiBase {
 	 * @return {Promise} Validation result
 	 */
 	static Email(address) {
-		return super.GET(urlBase + "email/" + address);
+		return super.POST(urlBase + "email", address);
 	}
 
 	/**
