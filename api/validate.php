@@ -64,27 +64,5 @@ class ValidateApi extends Api {
 			self::Invalid($error);
 		self::Valid('Link URL is valid and not already on your profile');
 	}
-
-	/**
-	 * Report a valid result message.  Ends script execution.
-	 * @param string $message Validation message to report
-	 */
-	private static function Valid(string $message): void {
-		self::Success((object)[
-			'status' => 'valid',
-			'message' => $message
-		]);
-	}
-
-	/**
-	 * Report an invalid result message.  Ends script execution.
-	 * @param string $message Validation message to report
-	 */
-	private static function Invalid(string $message): void {
-		self::Success((object)[
-			'status' => 'invalid',
-			'message' => $message
-		]);
-	}
 }
 ValidateApi::Respond();

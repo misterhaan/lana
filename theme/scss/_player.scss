@@ -60,6 +60,7 @@ section.links {
 
 	a {
 		margin: 5px 10px;
+		display: inline-block; // to allow wrapping
 
 		&:before {
 			margin-right: 5px;

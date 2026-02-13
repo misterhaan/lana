@@ -111,6 +111,48 @@ class Profile {
 }
 
 /**
+ * Data and operations for profiles that provide an avatar option
+ */
+class AvatarProfile {
+	public int $id;
+	public string $type;
+	public string $url;
+	public string $avatar;
+
+	private function __construct(int $id, string $type, string $url, string $avatar) {
+		$this->id = $id;
+		$this->type = $type;
+		$this->url = $url;
+		$this->avatar = $avatar;
+	}
+
+	/**
+	 * List a player’s profiles that have avatars.
+	 * @param mysqli $db Database connection
+	 * @param PlayerOne $player Signed-in player
+	 * @return self[] Array of player’s profiles with avatars
+	 */
+	public static function List(mysqli $db, int $player): array {
+		try {
+			$select = $db->prepare('select p.id, pl.type, p.url, p.avatar from profile as p left join profile_link as pl on pl.id=p.id where pl.player=? and p.avatar is not null and p.avatar!=\'\' order by pl.type');
+			$select->bind_param('i', $player);
+			$select->execute();
+			/** @var string $type */
+			/** @var string $url */
+			/** @var string $avatar */
+			$select->bind_result($id, $type, $url, $avatar);
+			$links = [];
+			while ($select->fetch())
+				$links[] = new self($id, $type, $url, $avatar);
+			$select->close();
+			return $links;
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error looking up avatar profiles', $mse);
+		}
+	}
+}
+
+/**
  * Data and operations involving the profile table that are only available to the signed-in user.
  */
 class ProfileSettings extends Profile {

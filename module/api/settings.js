@@ -7,6 +7,41 @@ const urlBase = "api/settings/";
  */
 export default class SettingsApi extends ApiBase {
 	/**
+	 * Get the current player's avatar profile information.
+	 * @returns {Promise} Object with avatar profile information
+	 */
+	static LoadAvatars() {
+		return super.GET(urlBase + "avatars");
+	}
+
+	/**
+	 * Sets the current player's avatar to the specified profile ID.  Use 0 for the default avatar.
+	 * @param {number} profileId ID of the profile to use as the player's avatar, or 0 to use the default avatar
+	 * @returns {Promise} No data
+	 */
+	static SetAvatar(profileId) {
+		return super.PUT(urlBase + "avatar", `${profileId}`);
+	}
+
+	/**
+	 * Sets the current player's username to the specified value.  Returns validation status, and only a valid username will be set.
+	 * @param {string} username New username to set
+	 * @returns {Promise} Validation result object
+	 */
+	static SetUsername(username) {
+		return super.PUT(urlBase + "username", username);
+	}
+
+	/**
+	 * Sets the current player's real name to the specified value.
+	 * @param {string} realName New real name to set
+	 * @returns {Promise} No data
+	 */
+	static SetRealName(realName) {
+		return super.PUT(urlBase + "realName", realName);
+	}
+
+	/**
 	 * Get a list of links for the current player.  Includes visibility setting.
 	 * @returns {Promise} Object with array of links
 	 */

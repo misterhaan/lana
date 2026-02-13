@@ -5,6 +5,8 @@
  * represents a user of the LANA website.
  */
 class Player {
+	protected const DefaultAvatar = 'external/user-secret.svg';
+
 	/**
 	 * Player's username, which can be shown to anyone.
 	 */
@@ -13,7 +15,7 @@ class Player {
 	/**
 	 * URL to player's avatar.
 	 */
-	public string $avatar = '';
+	public string $avatar = self::DefaultAvatar;
 
 	protected function __construct(string $username, string $avatar) {
 		$this->username = $username;
@@ -34,7 +36,7 @@ class Player {
 			$select->bind_result($username, $avatar);
 			$players = [];
 			while ($select->fetch())
-				$players[] = new self($username, $avatar);
+				$players[] = new self($username, $avatar ?? self::DefaultAvatar);
 			return $players;
 		} catch (mysqli_sql_exception $mse) {
 			throw new DatabaseException('Error looking up player list', $mse);
@@ -81,7 +83,7 @@ class PlayerProfile extends Player {
 			if (!$select->fetch())
 				return null;
 			$select->close();
-			$profilePlayer = new self($username, $joined, $avatar);
+			$profilePlayer = new self($username, $joined, $avatar ?? self::DefaultAvatar);
 			require_once 'profile.php';
 			$profilePlayer->links = Profile::List($db, $player, $id);
 			return $profilePlayer;
@@ -115,8 +117,9 @@ class PlayerOne extends Player {
 	 */
 	public function __construct(int $id, mysqli $db) {
 		try {
-			$select = $db->prepare('select p.id, p.username, p.realName, pr.avatar from player as p left join profile as pr on pr.id=p.avatarProfile where p.id=? limit 1');
-			$select->bind_param('i', $id);
+			$select = $db->prepare('select p.id, p.username, p.realName, coalesce(pr.avatar, ?) from player as p left join profile as pr on pr.id=p.avatarProfile where p.id=? limit 1');
+			$defaultAvatar = self::DefaultAvatar;
+			$select->bind_param('si', $defaultAvatar, $id);
 			$select->execute();
 			$select->bind_result($this->id, $this->username, $this->realName, $this->avatar);
 			if ($select->fetch())
@@ -250,6 +253,40 @@ class PlayerOne extends Player {
 	}
 
 	/**
+	 * Set the player's username to a new value.
+	 * @param mysqli $db Database connection object
+	 * @param string $username New username to set, already verified as valid
+	 * @throws DatabaseException Thrown when the database cannot complete a request
+	 */
+	public function SetUsername(mysqli $db, string $username): void {
+		try {
+			$update = $db->prepare('update player set username=? where id=? limit 1');
+			$update->bind_param('si', $username, $this->id);
+			$update->execute();
+			$update->close();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error updating username', $mse);
+		}
+	}
+
+	/**
+	 * Set the player's real name to a new value.
+	 * @param mysqli $db Database connection object
+	 * @param string $realName New real name to set
+	 * @throws DatabaseException Thrown when the database cannot complete a request
+	 */
+	public function SetRealName(mysqli $db, string $realName): void {
+		try {
+			$update = $db->prepare('update player set realName=? where id=? limit 1');
+			$update->bind_param('si', $realName, $this->id);
+			$update->execute();
+			$update->close();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error updating real name', $mse);
+		}
+	}
+
+	/**
 	 * Add an external account linked to this player.
 	 * @param mysqli $db Database connection object
 	 * @param string $site ID of external authentication site
@@ -296,7 +333,7 @@ class PlayerOne extends Player {
 	 */
 	public function SetAvatarProfile(mysqli $db, int $profileId): void {
 		try {
-			$update = $db->prepare('update player set avatarProfile=? where id=? limit 1');
+			$update = $db->prepare('update player set avatarProfile=nullif(?,0) where id=? limit 1');
 			$update->bind_param('ii', $profileId, $this->id);
 			$update->execute();
 			$update->close();

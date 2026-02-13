@@ -14,8 +14,12 @@ const Views = {
 	Settings: {
 		Name: "settings",
 		Title: "Settings",
-		DefaultSubViewName: "links",
+		DefaultSubViewName: "profile",
 		SubViews: {
+			Profile: {
+				Name: "profile",
+				Title: "Profile"
+			},
 			Links: {
 				Name: "links",
 				Title: "Links"

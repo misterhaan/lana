@@ -9,6 +9,61 @@ require_once CLASS_PATH . 'api.php';
  */
 class SettingsApi extends Api {
 	/**
+	 * Update the current player's username to the value specified in the request body.  Returns validation status, and only a valid username will be set.
+	 */
+	protected static function PUT_username(): void {
+		$username = trim(self::ReadRequestText());
+		if (!$username)
+			self::NeedMoreInfo('Username must be included in the request body.');
+		require_once CLASS_PATH . 'player.php';
+		if (!PlayerOne::ValidUsername($username))
+			self::Invalid('Must be between 4 and 20 characters and cannot include / # ? or spaces');
+		$db = self::RequireLatestDatabase();
+		$used = PlayerOne::UsernameUsedBy($db, $username);
+		$player = self::RequirePlayer($db);
+		if ($used)
+			if ($player->id == $used)
+				self::Valid('This is your current username');
+			else
+				self::Invalid('Username already in use');
+		$player->SetUsername($db, $username);
+		self::Valid('Username updated');
+	}
+
+	/**
+	 * Update the current player's real name to the value specified in the request body.
+	 */
+	protected static function PUT_realName(): void {
+		$realName = trim(self::ReadRequestText());
+		if (!$realName)
+			self::NeedMoreInfo('Real name must be included in the request body.');
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		self::Success($player->SetRealName($db, $realName));
+	}
+
+	/**
+	 * Gets the current player's profile information, including profiles with avatars.
+	 */
+	protected static function GET_avatars(): void {
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		require_once CLASS_PATH . 'profile.php';
+		self::Success(AvatarProfile::List($db, $player->id));
+	}
+
+	/**
+	 * Sets the current player's avatar to the specified profile ID, passed as the request body.  Use 0 for the default avatar.
+	 */
+	protected static function PUT_avatar(): void {
+		$profile = +self::ReadRequestText();
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		$player->SetAvatarProfile($db, $profile);
+		self::Success();
+	}
+
+	/**
 	 * Gets the list of links for the current player.
 	 */
 	protected static function GET_links(): void {

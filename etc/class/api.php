@@ -157,6 +157,28 @@ abstract class Api {
 	}
 
 	/**
+	 * Report a valid result message.  Ends script execution.
+	 * @param string $message Validation message to report
+	 */
+	protected static function Valid(string $message): void {
+		self::Success((object)[
+			'status' => 'valid',
+			'message' => $message
+		]);
+	}
+
+	/**
+	 * Report an invalid result message.  Ends script execution.
+	 * @param string $message Validation message to report
+	 */
+	protected static function Invalid(string $message): void {
+		self::Success((object)[
+			'status' => 'invalid',
+			'message' => $message
+		]);
+	}
+
+	/**
 	 * Reject the request because it is missing required information.
 	 * @param string $message short message describing what's missing and how to provide it.
 	 */
