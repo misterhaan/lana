@@ -71,7 +71,7 @@ const Profile = {
 		this.avatar = this.player.avatar;
 		this.loading = true;
 		try {
-			const avatars = await SettingsApi.LoadAvatars();
+			const avatars = await SettingsApi.ListAvatars();
 			this.profiles = avatars;
 		} finally {
 			this.loading = false;

@@ -10,7 +10,7 @@ export default class SettingsApi extends ApiBase {
 	 * Get the current player's avatar profile information.
 	 * @returns {Promise} Object with avatar profile information
 	 */
-	static LoadAvatars() {
+	static ListAvatars() {
 		return super.GET(urlBase + "avatars");
 	}
 
