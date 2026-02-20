@@ -1,0 +1,15 @@
+h2.inbox {
+	&:before {
+		margin-right: 10px;
+	}
+}
+
+#email li button {
+	@include icon-button;
+	color: $white;
+	border-radius: $gentleCorner;
+
+	&:hover {
+		background-color: $purple;
+	}
+}

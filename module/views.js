@@ -24,6 +24,10 @@ const Views = {
 				Name: "links",
 				Title: "Links"
 			},
+			Email: {
+				Name: "email",
+				Title: "Email"
+			},
 			Accounts: {
 				Name: "accounts",
 				Title: "Accounts"

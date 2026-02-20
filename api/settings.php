@@ -121,6 +121,67 @@ class SettingsApi extends Api {
 	}
 
 	/**
+	 * Gets the list of email addresses linked to the current player.
+	 */
+	protected static function GET_email(): void {
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		require_once CLASS_PATH . 'email.php';
+		self::Success(Email::List($db, $player->id));
+	}
+
+	/**
+	 * Adds a new email address linked to the current player.  The email address
+	 * must be included in the request body and valid to add.
+	 */
+	protected static function POST_addEmail(): void {
+		$address = trim(self::ReadRequestText());
+		if (!$address)
+			self::NeedMoreInfo('Email address must be included in the request body.');
+		require_once CLASS_PATH . 'email.php';
+		if (!Email::Valid($address))
+			self::DatabaseError('Does not look like an email address');
+		$db = self::RequireLatestDatabase();
+		$linked = Email::UsedBy($db, $address);
+		$player = self::RequirePlayer($db);
+		if ($linked)
+			if ($player->id == $linked)
+				self::DatabaseError('Email address is already linked to you');
+			else
+				self::DatabaseError('Email address already linked to another player');
+		self::Success($player->AddEmail($db, $address));
+	}
+
+	/**
+	 * Sets the primary email address for the current player to the value
+	 * specified in the request body.  The email address must already be
+	 * linked to the player.
+	 */
+	protected static function PUT_primaryEmail(): void {
+		$address = trim(self::ReadRequestText());
+		if (!$address)
+			self::NeedMoreInfo('Email address must be included in the request body.');
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		require_once CLASS_PATH . 'email.php';
+		self::Success(Email::SetPrimary($db, $player->id, $address));
+	}
+
+	/**
+	 * Removes an email address from the current player's account.  The email
+	 * address must be included in the request body and linked to the player.
+	 */
+	protected static function POST_removeEmail(): void {
+		$address = trim(self::ReadRequestText());
+		if (!$address)
+			self::NeedMoreInfo('Email address must be included in the request body.');
+		$db = self::RequireLatestDatabase();
+		$player = self::RequirePlayer($db);
+		require_once CLASS_PATH . 'email.php';
+		self::Success(Email::Remove($db, $player->id, $address));
+	}
+
+	/**
 	 * Get the list of sign-in accounts for the current player.
 	 */
 	protected static function GET_accounts(): void {

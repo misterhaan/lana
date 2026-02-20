@@ -5,6 +5,37 @@
  * one of those as the address LANA should use to contact them.
  */
 class Email {
+	public string $address;
+	public bool $isPrimary;
+
+	private function __construct(string $address, bool $isPrimary) {
+		$this->address = $address;
+		$this->isPrimary = $isPrimary;
+	}
+
+	/**
+	 * List the email addresses linked to a player.
+	 * @param mysqli $db Database connection object
+	 * @param int $player Player ID whose emails should be listed
+	 * @return self[] List of email addresses linked to the player
+	 */
+	public static function List(mysqli $db, int $player): array {
+		try {
+			$select = $db->prepare('select address, isPrimary from email where player=? order by isPrimary desc, address');
+			$select->bind_param('i', $player);
+			$select->execute();
+			/** @var bool $isPrimary */
+			$select->bind_result($address, $isPrimary);
+			$emails = [];
+			while ($select->fetch())
+				$emails[] = new self($address, $isPrimary);
+			$select->close();
+			return $emails;
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error listing email addresses', $mse);
+		}
+	}
+
 	/**
 	 * Add an email address linked to a player.
 	 * @param mysqli $db Database connection object
@@ -84,6 +115,48 @@ class Email {
 			$update->close();
 		} catch (mysqli_sql_exception $mse) {
 			throw new DatabaseException('Error clearing primary flag from other email addresses', $mse);
+		}
+	}
+
+	/**
+	 * Set an email address as the primary email for a player.  The email must
+	 * already be linked to the player.
+	 * @param mysqli $db Database connection object
+	 * @param int $player Player ID whose primary email should be set
+	 * @param string $email Email address to set as primary
+	 * @throws DatabaseException Thrown when the database isn't able to complete a request, or if the email isn't linked to the player
+	 */
+	public static function SetPrimary(mysqli $db, int $player, string $email): void {
+		$linked = self::UsedBy($db, $email);
+		if ($linked != $player)
+			throw new DatabaseException('Email address is not linked to you');
+		try {
+			$db->begin_transaction();
+			self::ClearPrimary($db, $player);
+			$update = $db->prepare('update email set isPrimary=1 where player=? and address=?');
+			$update->bind_param('is', $player, $email);
+			$update->execute();
+			$update->close();
+			$db->commit();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error setting primary email address', $mse);
+		}
+	}
+
+	/**
+	 * Remove an email address linked to a player.  The email address must not be the primary email for the player.
+	 * @param mysqli $db Database connection object
+	 * @param int $player Player ID whose email should be removed
+	 * @param string $email Email address to remove
+	 */
+	public static function Remove(mysqli $db, int $player, string $email): void {
+		try {
+			$delete = $db->prepare('delete from email where player=? and address=? and not isPrimary');
+			$delete->bind_param('is', $player, $email);
+			$delete->execute();
+			$delete->close();
+		} catch (mysqli_sql_exception $mse) {
+			throw new DatabaseException('Error removing email address', $mse);
 		}
 	}
 }

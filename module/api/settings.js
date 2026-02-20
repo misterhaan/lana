@@ -78,6 +78,41 @@ export default class SettingsApi extends ApiBase {
 	}
 
 	/**
+	 * Get the list of email addresses associated with the current player.
+	 * @returns {Promise} Array of email address objects
+	 */
+	static ListEmail() {
+		return super.GET(urlBase + "email");
+	}
+
+	/**
+	 * Add an email address to the current player's profile.
+	 * @param {string} email Email address to add
+	 * @returns {Promise} No data
+	 */
+	static AddEmail(email) {
+		return super.POST(urlBase + "addEmail", email);
+	}
+
+	/**
+	 * Set an email address as the primary email for the current player.  The email must already be associated with the player.
+	 * @param {string} email Email address to make primary
+	 * @returns {Promise} No data
+	 */
+	static SetPrimaryEmail(email) {
+		return super.PUT(urlBase + "primaryEmail", email);
+	}
+
+	/**
+	 * Remove an email address from the current player's profile.  The email must already be associated with the player and not be their primary email.
+	 * @param {string} email Email address to remove
+	 * @returns {Promise} No data
+	 */
+	static RemoveEmail(email) {
+		return super.POST(urlBase + "removeEmail", email);
+	}
+
+	/**
 	 * Get the list of sign-in accounts linked to the current player.
 	 * @return {Promise} Array of sign-in accounts
 	 */
