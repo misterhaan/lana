@@ -1,4 +1,6 @@
 // Title bar styles for LAN Ahead
+@use "!base" as lana;
+
 body {
 	padding-top: 30px;
 
@@ -8,9 +10,9 @@ body {
 }
 
 #titleBar {
-	background-color: $purple;
-	color: $white;
-	@include flex-container-center;
+	background-color: lana.$purple;
+	color: lana.$white;
+	@include lana.flex-container-center;
 	padding: 0 5px;
 	font-size: .9em;
 	height: 30px;
@@ -19,7 +21,7 @@ body {
 	width: calc(100% - 10px);
 
 	@media(min-width: 600px) {
-		border-radius: 0 0 $largeCorner $largeCorner;
+		border-radius: 0 0 lana.$largeCorner lana.$largeCorner;
 		width: calc(100% - 40px);
 	}
 
@@ -35,7 +37,7 @@ body {
 }
 
 #goHome {
-	@include flex-container-center;
+	@include lana.flex-container-center;
 }
 
 #favicon {
@@ -65,7 +67,7 @@ body {
 
 		&.open,
 		&:hover {
-			background-color: $lightPurple;
+			background-color: lana.$lightPurple;
 		}
 
 		.avatar {
@@ -75,5 +77,3 @@ body {
 		}
 	}
 }
-
-@import "!userActions";

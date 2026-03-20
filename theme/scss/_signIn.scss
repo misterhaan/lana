@@ -1,6 +1,8 @@
 // Registration form styles for LAN Ahead
+@use "!base" as lana;
+
 #new-user .label {
-	@include flex-item-fixed(112px);
+	@include lana.flex-item-fixed(112px);
 }
 
 #new-user-buttons {
@@ -25,7 +27,7 @@
 		border: 3px solid transparent;
 
 		&:focus-within {
-			border-color: $orange;
+			border-color: lana.$orange;
 			border-radius: 9px;
 		}
 	}
@@ -39,7 +41,7 @@
 		border-radius: 6px;
 
 		&[aria-checked="true"] {
-			border: 3px solid $white;
+			border: 3px solid lana.$white;
 			padding: 0;
 		}
 

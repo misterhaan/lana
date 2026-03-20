@@ -1,3 +1,5 @@
+@use "!base" as lana;
+
 @font-face {
 	font-family: Fontawesome;
 	src: url(fa-regular-400.woff2);
@@ -58,13 +60,13 @@
 .valid:before {
 	font-family: FontawesomeSolid;
 	content: "\f00c";
-	color: $green;
+	color: lana.$green;
 }
 
 .invalid:before {
 	font-family: FontawesomeSolid;
 	content: "\f05e";
-	color: $red;
+	color: lana.$red;
 }
 
 [draggable]:before {
@@ -94,13 +96,13 @@
 .delete:before {
 	font-family: FontawesomeSolid;
 	content: "\f00d";
-	color: $red;
+	color: lana.$red;
 }
 
 .unlink:before {
 	font-family: FontawesomeSolid;
 	content: "\f127";
-	color: $red;
+	color: lana.$red;
 }
 
 .links:before {

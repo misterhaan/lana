@@ -1,4 +1,5 @@
 // Styles specific to the accounts subpage of the settings page
+@use "!base" as lana;
 
 .cards {
 	padding: 0;
@@ -8,19 +9,19 @@
 		list-style-type: none;
 		display: inline-flex;
 		margin: 5px;
-		border-radius: $mediumCorner;
+		border-radius: lana.$mediumCorner;
 	}
 }
 
 .linkedAccount {
-	background-color: $purple;
+	background-color: lana.$purple;
 
 	&:before {
 		text-align: center;
 		line-height: 48px;
 		width: 48px;
 		font-size: 1.5em;
-		border-radius: $mediumCorner 0 0 $mediumCorner;
+		border-radius: lana.$mediumCorner 0 0 lana.$mediumCorner;
 	}
 
 	a {
@@ -31,19 +32,19 @@
 		}
 
 		&:focus .avatar {
-			border-radius: $gentleCorner;
-			box-shadow: 0 0 0 3px $orange;
+			border-radius: lana.$gentleCorner;
+			box-shadow: 0 0 0 3px lana.$orange;
 		}
 	}
 
 	.actions {
-		border-radius: 0 $mediumCorner $mediumCorner 0;
+		border-radius: 0 lana.$mediumCorner lana.$mediumCorner 0;
 		padding-left: 3px;
 
 		button {
 			padding: 0 0 0 3px; // there's less padding on the left than everywhere else
 			margin: 3px;
-			border-radius: $gentleCorner;
+			border-radius: lana.$gentleCorner;
 			cursor: pointer;
 		}
 	}

@@ -1,3 +1,5 @@
+@use "!base" as lana;
+
 ol.playerList {
 	list-style-type: none;
 	margin: 5px 15px; // each 5px less than normal because it's not collapsing margins with the li children
@@ -9,12 +11,12 @@ ol.playerList {
 
 	a {
 		display: flex;
-		background-color: $darkerGrey;
-		border-radius: $gentleCorner;
-		border-left: $darkerGrey solid 6px;
+		background-color: lana.$darkerGrey;
+		border-radius: lana.$gentleCorner;
+		border-left: lana.$darkerGrey solid 6px;
 
 		&.friend {
-			border-left-color: $orange;
+			border-left-color: lana.$orange;
 		}
 	}
 

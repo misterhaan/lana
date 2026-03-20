@@ -1,4 +1,5 @@
 // Styles specific to the setup page
+@use "!base" as lana;
 
 @font-face {
 	font-family: InconsolataGo;
@@ -7,13 +8,13 @@
 
 .percent-field {
 	margin: 3px 20px;
-	background-color: $darkMediumGrey;
-	border-radius: $gentleCorner;
+	background-color: lana.$darkMediumGrey;
+	border-radius: lana.$gentleCorner;
 
 	.percent-value {
 		height: 10px;
-		background-color: $blue;
-		border-radius: $gentleCorner;
+		background-color: lana.$blue;
+		border-radius: lana.$gentleCorner;
 	}
 }
 
@@ -27,7 +28,7 @@
 #twitch-keys,
 #google-keys {
 	.label {
-		@include flex-item-fixed(105px);
+		@include lana.flex-item-fixed(105px);
 	}
 }
 
@@ -37,15 +38,14 @@ summary {
 
 blockquote {
 	margin: 0 0 0 20px;
-	border-left: 3px solid $lightGrey;
+	border-left: 3px solid lana.$lightGrey;
 }
 
 pre {
-	@extend p;
 	padding: 5px 10px;
-	border-radius: $gentleCorner;
-	background-color: $lightGrey;
-	color: $black;
+	border-radius: lana.$gentleCorner;
+	background-color: lana.$lightGrey;
+	color: lana.$black;
 	overflow-x: auto;
 }
 

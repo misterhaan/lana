@@ -1,3 +1,5 @@
+@use "!base" as lana;
+
 h2.inbox {
 	&:before {
 		margin-right: 10px;
@@ -5,11 +7,11 @@ h2.inbox {
 }
 
 #email li button {
-	@include icon-button;
-	color: $white;
-	border-radius: $gentleCorner;
+	@include lana.icon-button;
+	color: lana.$white;
+	border-radius: lana.$gentleCorner;
 
 	&:hover {
-		background-color: $purple;
+		background-color: lana.$purple;
 	}
 }

@@ -1,8 +1,10 @@
 // Styles specific to the links subpage of the settings page
 
+@use "!base" as lana;
+
 .visibility {
 	&.droptarget {
-		outline: 3px dotted $blue;
+		outline: 3px dotted lana.$blue;
 	}
 
 	h2:before {
@@ -16,8 +18,8 @@
 			cursor: grab;
 			margin: 5px;
 			display: inline-block;
-			background-color: $darkerGrey;
-			border-radius: $gentleCorner;
+			background-color: lana.$darkerGrey;
+			border-radius: lana.$gentleCorner;
 			padding: 1px 0 0 7px;
 
 			&:before {
